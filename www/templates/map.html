@@ -1,0 +1,24 @@
+<ion-view view-title="Map">
+    <ion-content scroll="false">
+        <map center=" current_pos[0], current_pos[1]" zoom="15" disable-default-u-i="true">
+          <directions 
+            draggable="false"
+            avoidTolls="true"
+            provideRouteAlternatives="true"
+            panel="directionpanel"
+            travel-mode="DRIVING"
+            origin="{{start}}"
+            destination="{{end}}">
+          </directions>
+        </map>
+    <ion-scroll>
+  <div id="directionpanel" style="width:100%"><h2>Direction</h2>
+    </div>
+  </ion-scroll>
+
+    </ion-content>
+    <ion-footer-bar class="bar-assertive">
+      <a ng-click="clicked()" class="button button-icon icon ion-navigate">{{panelName}}</a>
+    </ion-footer-bar>
+  </ion-content>
+</ion-view>
