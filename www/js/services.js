@@ -1,6 +1,7 @@
 angular.module('helpMe.services', [])
 
  .factory('Auth', function($firebaseAuth) {
+  
     var endPoint = "https://fbchat27c.firebaseio.com/" ;
     var usersRef = new Firebase(endPoint);
     return $firebaseAuth(usersRef);

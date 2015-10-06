@@ -1,9 +1,52 @@
-<ion-view view-title="Home">
+<ion-view view-title="Home" ng-init="list()"> 
+<ion-nav-buttons side="right">
+  <button class="button" ng-click="create()">Help Me!</button>
+</ion-nav-buttons>
   <ion-content>
-    <ion-list>
-      <ion-item ng-repeat="playlist in playlists" href="#/app/playlists/{{playlist.id}}">
-        {{playlist.title}}
-      </ion-item>
-    </ion-list>
+<!--       <button class="button button-block button-outline button-positive" ng-click="info()">
+        Todo Info
+      </button> -->
+<button class="button button-block button-outline button-positive" ng-click="clicked()">get current location</button>
+
+<div ng-repeat="todo in data.todos | orderBy:'-date'"  class="list card">
+  <div class="item item-avatar">
+    <img src="{{todo.user_pp}}">
+    <h2>{{todo.username}}</h2>
+    <p><span am-time-ago="{{todo.date}}"></p>
+    <!-- <p>{{todo.date | amCalendar }}</p> -->
+  </div>
+
+  <div class="item item-body">
+    <img class="full-image" src="img/ID_PH_1.jpg">
+    <p>
+      {{todo.title}}
+    </p>
+<!--     <p>{{todo.user_latitude}}</p>
+    <p>{{todo.user_longitude}}</p> -->
+    <p>{{$root.current_pos[0]}}</p>
+    <p>{{$root.current_pos[1]}}</p>
+    <p>{{getDistanceFromLatLonInKm($root.current_pos[0], $root.current_pos[1], todo.user_latitude, todo.user_longitude);}} Km from your location.</p>
+    <p>
+      <a href="#" class="subdued">1 Like</a>
+      <a href="#" class="subdued">5 Comments</a>
+    </p>
+  </div>
+
+  <div class="item tabs tabs-secondary tabs-icon-left">
+    <a class="tab-item" href="#">
+      <i class="icon ion-thumbsup"></i>
+      Like
+    </a>
+    <a class="tab-item" href="#">
+      <i class="icon ion-chatbox"></i>
+      Comment
+    </a>
+    <a class="tab-item" href="#">
+      <i class="icon ion-share"></i>
+      Share
+    </a>
+  </div>
+
+</div>
   </ion-content>
 </ion-view>

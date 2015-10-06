@@ -1,4 +1,4 @@
-angular.module('helpMe.controllers', [])
+angular.module('helpMe.controllers', ['angularMoment', 'helpMe.services'])
 
 
 .controller("SignUpCtrl", function(Auth, $scope, $firebaseAuth, $cordovaOauth, $ionicLoading,$ionicHistory, $state, $rootScope) {
@@ -123,6 +123,23 @@ angular.module('helpMe.controllers', [])
 
 })
 
+.controller('ChatController',
+           ["$scope", "messageService",
+  function($scope ,  messageService) {
+    $scope.user = "";
+    $scope.text = "";
+    $scope.messages = messageService.getAll();
+
+    $scope.addMessage = function() {
+      var user = $scope.user || "anonymous";
+      if ($scope.text != "") {
+        messageService.add({user: user, text: $scope.text});
+      }
+      
+      $scope.text = "";
+    };
+}])
+
 .controller('BrowseCtrl', function($scope, $timeout){
   $scope.title = 'List of product';
   $scope.productList = ['Samsung S4', 'Sony Experia 4Z', 'Motorolla Robo-214', 'Logitech B-125', 'Lavender'];
@@ -135,16 +152,113 @@ angular.module('helpMe.controllers', [])
   };
 })
 
-.controller('PlaylistsCtrl', function($scope) {
-  $scope.playlists = [
-    { title: 'Reggae', id: 1 },
-    { title: 'Chill', id: 2 },
-    { title: 'Dubstep', id: 3 },
-    { title: 'Indie', id: 4 },
-    { title: 'Rap', id: 5 },
-    { title: 'Cowbell', id: 6 }
-  ];
-})
+.controller('PlaylistsCtrl', function($scope,$cordovaGeolocation, $compile, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
+  // show kilometer
+  var position = [];
+  $scope.current_pos = $rootScope.current_pos; 
+  user_lat = '';
+  user_long = '';
+
+  // navigator.geolocation.getCurrentPosition(geolocationSuccess, geolocationError);
+
+  // navigator.geolocation.watchPosition(function (position) {
+  //   $scope.current_pos[0] = position.coords.latitude;
+  //   $scope.current_pos[1] = position.coords.longitude;
+  //   $scope.start = $scope.current_pos[0] + "," + $scope.current_pos[1];
+  // }, geolocationError);
+
+  //  function geolocationSuccess(position) {
+  //   $scope.current_pos.push(position.coords.latitude);
+  //   $scope.current_pos.push(position.coords.longitude);
+  // }
+
+  //  function geolocationError(err) {
+  //   alert('ERROR(' + err.code + '): ' + err.message);
+  //  }
+
+  // firebase initialization
+  fb = new Firebase("https://fbchat27c.firebaseio.com/");
+  username_status = $rootScope.username;
+  user_pic_url_status = $rootScope.pic_url;
+
+
+
+    // Show kilometer
+    function deg2rad(deg) {
+      return deg * (Math.PI/180)
+    }
+   
+
+    $scope.getDistanceFromLatLonInKm = function(lat1,lon1,lat2,lon2) {
+    var lat1 = parseFloat(lat1);
+    var lon1 = parseFloat(lon1);
+    var lat2 = parseFloat(lat2);
+    var lon2 = parseFloat(lon2);
+    var R = 6371; // Radius of the earth in km
+    var dLat = deg2rad(lat2-lat1);  // deg2rad below
+    var dLon = deg2rad(lon2-lon1); 
+    var a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2)
+      ; 
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    var d = R * c; // Distance in km
+    return parseFloat(JSON.stringify(d)).toFixed(1);
+   }
+
+   $scope.clicked = function(){
+     alert(user_lat);
+   }
+
+    // Create todo list
+    $scope.list = function(){
+    fbAuth = fb.getAuth();
+    if(fbAuth) {
+        // var syncObject = $firebaseObject(fb.child("users/" + fbAuth.uid));
+        var syncObject = $firebaseObject(fb.child("timeline/"));
+        syncObject.$bindTo($scope, "data");
+    }
+    }
+
+    $scope.create = function() {
+        $ionicPopup.prompt({
+            title: 'Enter new situation',
+            inputType: 'text'
+        })
+        .then(function(result) {
+            if(result !== "") {
+                if($scope.data.hasOwnProperty("todos") !== true) {
+                    $scope.data.todos = [];
+                }
+                created_status = (Date.now()).toString();
+                user_lat = $scope.current_pos[0];
+                user_long = $scope.current_pos[1];
+                alert(user_lat);
+                $scope.data.todos.push({title: result, date: created_status, username: username_status, user_pp: user_pic_url_status, user_latitude: user_lat, user_longitude: user_long});
+            } else {
+                alert("Action not completed");
+            }
+        });
+    }
+
+    // $scope.create = function() {
+    //     $ionicPopup.prompt({
+    //         title: 'Enter a new TODO item',
+    //         inputType: 'text'
+    //     })
+    //     .then(function(result) {
+    //         if(result !== "") {
+    //             if($scope.data.hasOwnProperty("todos") !== true) {
+    //                 $scope.data.todos = [];
+    //             }
+    //             $scope.data.todos.push({title: result});
+    //         } else {
+    //             console.log("Action not completed");
+    //         }
+    //     });
+    // }
+} )
 
 .controller('PlaylistCtrl', function($scope, $stateParams) {
 });

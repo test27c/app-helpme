@@ -2,14 +2,37 @@
 
 var helpMe = angular.module('helpMe', ['ionic', 'firebase','ngCordova', 'ngCordovaOauth','ngMap', 'helpMe.controllers', 'helpMe.services', 'helpMe.directives']);
  
-helpMe.run(function($ionicPlatform, GeoAlert) {
+helpMe.run(function($ionicPlatform, $cordovaGeolocation, $rootScope) {
     $ionicPlatform.ready(function() {
+
+
+  $rootScope.current_pos = []; 
+
+  navigator.geolocation.getCurrentPosition(geolocationSuccess, geolocationError);
+
+  navigator.geolocation.watchPosition(function (position) {
+    $rootScope.current_pos[0] = position.coords.latitude;
+    $rootScope.current_pos[1] = position.coords.longitude;
+  }, geolocationError);
+
+   function geolocationSuccess(position) {
+    $rootScope.current_pos.push(position.coords.latitude);
+    $rootScope.current_pos.push(position.coords.longitude);
+  }
+
+   function geolocationError(err) {
+    alert('ERROR(' + err.code + '): ' + err.message);
+   }
+
+
+      
         if(window.cordova && window.cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
         }
         if(window.StatusBar) {
             StatusBar.styleDefault();
-        }   //Begin the service
+        }   
+    //Begin the service
     //hard coded 'target'
     // var lat = 30.224090;
     // var long = -92.019843;
