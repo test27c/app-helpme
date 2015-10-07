@@ -6,7 +6,15 @@
 <!--       <button class="button button-block button-outline button-positive" ng-click="info()">
         Todo Info
       </button> -->
-<div ng-repeat="todo in timelines.todos | orderBy:'-date'"  class="list card">
+<button class="button button-block button-outline button-positive" ng-click="clicked()">get current location</button>
+<p>test</p>
+<h1>HELLO</h1>
+<div ng-repeat="todo in data.todos">
+    <p>
+      {{todo.title}}
+    </p>
+</div>
+<div ng-repeat="todo in data.todos | orderBy:'-date'"  class="list card">
   <div class="item item-avatar">
     <img src="{{todo.user_pp}}">
     <h2>{{todo.username}}</h2>
@@ -21,13 +29,13 @@
     </p>
     <p>{{getDistanceFromLatLonInKm($root.current_pos[0], $root.current_pos[1], todo.user_latitude, todo.user_longitude);}} Km from your location.</p>
     <p>
-      <a href="#" class="subdued">{{todo.useful_points}} person found this helpful!</a>
+      <a href="#" class="subdued">1 Like</a>
       <a href="#" class="subdued">5 Comments</a>
     </p>
   </div>
 
   <div class="item tabs tabs-secondary tabs-icon-left">
-    <a class="tab-item" href="#" ng-click="like()">
+    <a class="tab-item" href="#">
       <i class="icon ion-thumbsup"></i>
       Like
     </a>
@@ -35,7 +43,7 @@
       <i class="icon ion-chatbox"></i>
       Comment
     </a>
-    <a class="tab-item" href="#" ng-click="share_status(todo.title, todo.username)">
+    <a class="tab-item" href="#">
       <i class="icon ion-share"></i>
       Share
     </a>
