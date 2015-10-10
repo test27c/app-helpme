@@ -15,7 +15,8 @@
   </div>
 
   <div class="item item-body">
-    <img class="full-image" src="img/ID_PH_1.jpg">
+    <img class="full-image" ng-show='todo.user_images !== ""' ng-src="data:image/jpeg;base64,{{todo.user_images}}">
+    <img class="full-image" ng-show='todo.user_images === ""' ng-src="img/ID_PH_1.jpg">
     <p>
       {{todo.title}}
     </p>
@@ -40,7 +41,13 @@
       Share
     </a>
   </div>
-
 </div>
+
+  <ion-infinite-scroll
+      ng-if="canWeLoadMoreContent()"
+      on-infinite="populateList()" 
+      distance="1%">
+  </ion-infinite-scroll>    
+
   </ion-content>
 </ion-view>

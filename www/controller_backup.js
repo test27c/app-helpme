@@ -1,4 +1,4 @@
-angular.module('helpMe.controllers', ['angularMoment', 'helpMe.services'])
+angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.services'])
 
 
 .controller("SignUpCtrl", function(Auth, $scope, $firebaseAuth, $cordovaOauth, $ionicLoading,$ionicHistory, $state, $rootScope) {
@@ -89,32 +89,17 @@ angular.module('helpMe.controllers', ['angularMoment', 'helpMe.services'])
 
 })
 
-.controller('MapCtrl', function($scope,$ionicPlatform, $ionicPopup, $cordovaGeolocation, $compile) {
+.controller('MapCtrl', function($scope, $rootScope, $ionicPopup) {
 
   var position = [];
-  $scope.current_pos = []; 
+  $scope.current_pos = $rootScope.current_pos;
   $scope.directionpanel = "directionpanel";
 
+
   $scope.panelName = "petunjuk";
-  $scope.start = "";
   $scope.end = "-6.3683426,106.8331007";
+  $scope.start = $rootScope.current_pos[0] + "," + $rootScope.current_pos[1];
 
-  navigator.geolocation.getCurrentPosition(geolocationSuccess, geolocationError);
-
-  navigator.geolocation.watchPosition(function (position) {
-    $scope.current_pos[0] = position.coords.latitude;
-    $scope.current_pos[1] = position.coords.longitude;
-    $scope.start = $scope.current_pos[0] + "," + $scope.current_pos[1];
-  }, geolocationError);
-
-   function geolocationSuccess(position) {
-    $scope.current_pos.push(position.coords.latitude);
-    $scope.current_pos.push(position.coords.longitude);
-  }
-
-   function geolocationError(err) {
-    alert('ERROR(' + err.code + '): ' + err.message);
-   }
 
   $scope.clicked = function(){
   
@@ -152,32 +137,12 @@ angular.module('helpMe.controllers', ['angularMoment', 'helpMe.services'])
   };
 })
 
-.controller('PlaylistsCtrl', function($scope,$cordovaGeolocation, $compile, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
+.controller('PlaylistsCtrl', function($scope, $cordovaSocialSharing, $cordovaCamera, $compile, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
   // show kilometer
   var position = [];
-  $scope.current_pos = []; 
-
-  $scope.start = "";
-  $scope.end = "";
+  $scope.current_pos = $rootScope.current_pos; 
   user_lat = '';
   user_long = '';
-
-  navigator.geolocation.getCurrentPosition(geolocationSuccess, geolocationError);
-
-  navigator.geolocation.watchPosition(function (position) {
-    $scope.current_pos[0] = position.coords.latitude;
-    $scope.current_pos[1] = position.coords.longitude;
-    $scope.start = $scope.current_pos[0] + "," + $scope.current_pos[1];
-  }, geolocationError);
-
-   function geolocationSuccess(position) {
-    $scope.current_pos.push(position.coords.latitude);
-    $scope.current_pos.push(position.coords.longitude);
-  }
-
-   function geolocationError(err) {
-    alert('ERROR(' + err.code + '): ' + err.message);
-   }
 
   // firebase initialization
   fb = new Firebase("https://fbchat27c.firebaseio.com/");
@@ -192,9 +157,9 @@ angular.module('helpMe.controllers', ['angularMoment', 'helpMe.services'])
     }
    
 
-    $scope.getDistanceFromLatLonInKm = function(lat2,lon2) {
-    var lat1 = user_lat;
-    var lon1 = user_long;
+    $scope.getDistanceFromLatLonInKm = function(lat1,lon1,lat2,lon2) {
+    var lat1 = parseFloat(lat1);
+    var lon1 = parseFloat(lon1);
     var lat2 = parseFloat(lat2);
     var lon2 = parseFloat(lon2);
     var R = 6371; // Radius of the earth in km
@@ -210,57 +175,103 @@ angular.module('helpMe.controllers', ['angularMoment', 'helpMe.services'])
     return parseFloat(JSON.stringify(d)).toFixed(1);
    }
 
-   $scope.clicked = function(){
-     alert(user_lat);
+   $scope.like = function(){
+     alert(($scope.timelines.todos).length);
    }
+
+  $scope.share_status = function(message, sender) {
+    $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\n\nInfo by: "+ sender , "", null, "#Help Me!");
+  }
 
     // Create todo list
     $scope.list = function(){
     fbAuth = fb.getAuth();
     if(fbAuth) {
         // var syncObject = $firebaseObject(fb.child("users/" + fbAuth.uid));
-        var syncObject = $firebaseObject(fb.child("timeline/"));
-        syncObject.$bindTo($scope, "data");
+        var timelines = $firebaseObject(fb.child("timeline/"));
+        var s = $firebaseObject(fb.child("timeline/"));
+        timelines.$bindTo($scope, "timelines");
+
+        var liked_status = $firebaseObject(fb.child('timeline/todos'+($scope.timelines.todos).length));
     }
     }
 
-    $scope.create = function() {
-        $ionicPopup.prompt({
-            title: 'Enter new situation',
-            inputType: 'text'
-        })
+    // $scope.create = function() {
+    //     $ionicPopup.prompt({
+    //         title: 'Enter new situation',
+    //         inputType: 'text'
+    //     })
+$scope.data = {}
+
+$scope.create = function() {
+ionicPopup.show({
+
+      template: ' Title<input type="text" ng-model="data.title">   <br> What happened?  <input type="text" ng-model="data.description" > ',
+      title: 'Help Me !',
+      subTitle: 'Fill the form\n(image is optional)',
+      scope: $scope,
+      buttons: [{
+         text: 'Cancel'
+         type: 'button-assertive'
+      },
+      {
+        text: '<i class="icon ion-camera"></i>Take picture'
+        onTap: function(){
+          var options = {
+            quality: 75,
+            destinationType: Camera.DestinationType.Data_URL,
+            sourceType: Camera.PictureSourceType.CAMERA,
+            allowEdit: true,
+            encodingType: Camera.EncodingType.JPEG,
+            popoverOptions: CameraPopoverOptions,
+            targetWidth: 500,
+            targetHeight: 500,
+            saveToPhotoAlbum: false
+          };
+          $cordovaCamera.getPicture(options).then(function(imageData){
+            $data.image = imageData;
+          })
+        }
+      }, {
+         text: '<b>Save</b>',
+         type: 'button-positive',
+         onTap: function(e) {
+            if (!$scope.data.userPassword) {
+               //don't allow the user to close unless he enters wifi password
+               e.preventDefault();
+            } else {
+               return $scope.data;
+            }
+         }
+      }, ]
+   })
+
         .then(function(result) {
             if(result !== "") {
-                if($scope.data.hasOwnProperty("todos") !== true) {
-                    $scope.data.todos = [];
+                if($scope.timelines.hasOwnProperty("todos") !== true) {
+                    $scope.timelines.todos = [];
                 }
                 created_status = (Date.now()).toString();
                 user_lat = $scope.current_pos[0];
                 user_long = $scope.current_pos[1];
+                useful_point = 0;
+                user_like= [];
                 alert(user_lat);
-                $scope.data.todos.push({title: result, date: created_status, username: username_status, user_pp: user_pic_url_status, user_latitude: user_lat, user_longitude: user_long});
+
+
+                $scope.timelines.todos.push({title: result, 
+                                        date: created_status, 
+                                        username: username_status, 
+                                        user_pp: user_pic_url_status, 
+                                        user_latitude: user_lat, 
+                                        user_longitude: user_long,
+                                        useful_points: useful_point,
+                                        user_likes: user_like});
             } else {
                 alert("Action not completed");
             }
         });
     }
-
-    // $scope.create = function() {
-    //     $ionicPopup.prompt({
-    //         title: 'Enter a new TODO item',
-    //         inputType: 'text'
-    //     })
-    //     .then(function(result) {
-    //         if(result !== "") {
-    //             if($scope.data.hasOwnProperty("todos") !== true) {
-    //                 $scope.data.todos = [];
-    //             }
-    //             $scope.data.todos.push({title: result});
-    //         } else {
-    //             console.log("Action not completed");
-    //         }
-    //     });
-    // }
 } )
 
 .controller('PlaylistCtrl', function($scope, $stateParams) {

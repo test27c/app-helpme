@@ -137,19 +137,49 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
   };
 })
 
-.controller('PlaylistsCtrl', function($scope, $cordovaSocialSharing, $compile, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
+.controller('PlaylistsCtrl', function($scope, $cordovaSocialSharing, $cordovaCamera, $compile, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
+
+  // initialize infinite scroll
+  $scope.canWeLoadMoreContent = function() {
+    return ($scope.timelines.todos.length > 49) ? false : true;
+  }  
+
   // show kilometer
   var position = [];
   $scope.current_pos = $rootScope.current_pos; 
   user_lat = '';
   user_long = '';
+  user_images = '';
+  status_images = '';
 
   // firebase initialization
   fb = new Firebase("https://fbchat27c.firebaseio.com/");
   username_status = $rootScope.username;
   user_pic_url_status = $rootScope.pic_url;
 
+  function take_image(){
+    var options = {
+      quality: 75,
+      destinationType: Camera.DestinationType.DATA_URL,
+      sourceType: Camera.PictureSourceType.CAMERA,
+      encodingType: Camera.EncodingType.JPEG,
+      popoverOptions: CameraPopoverOptions,
+      targetWidth: 500,
+      targetHeight: 300,
+      allowEdit: true,
+      correctOrientation:true,
+      saveToPhotoAlbum: false
+    };
 
+    $cordovaCamera.getPicture(options).then(function(imageData){
+      status_images = imageData;
+      // if(!status_images){
+      //   alert('Image was not captured');
+      // } else{
+      //   alert('New Status :) ' + status_images);
+      // }
+    });     
+  }
 
     // Show kilometer
     function deg2rad(deg) {
@@ -197,6 +227,13 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
     }
 
     $scope.create = function() {
+      status_images = '';
+    if (confirm('Take picture?')) {
+        // Save it!
+        take_image();
+    } else{
+      // alert('error happended');
+    }      
         $ionicPopup.prompt({
             title: 'Enter new situation',
             inputType: 'text'
@@ -209,9 +246,11 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
                 created_status = (Date.now()).toString();
                 user_lat = $scope.current_pos[0];
                 user_long = $scope.current_pos[1];
+                user_image = status_images;
                 useful_point = 0;
                 user_like= [];
-                alert(user_lat);
+
+
                 $scope.timelines.todos.push({title: result, 
                                         date: created_status, 
                                         username: username_status, 
@@ -219,7 +258,9 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
                                         user_latitude: user_lat, 
                                         user_longitude: user_long,
                                         useful_points: useful_point,
-                                        user_likes: user_like});
+                                        user_likes: user_like,
+                                        user_images: user_image
+                                      });
             } else {
                 alert("Action not completed");
             }
