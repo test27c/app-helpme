@@ -1,3 +1,21 @@
+        onTap: function(){
+          var options = {
+            quality: 75,
+            destinationType: Camera.DestinationType.Data_URL,
+            sourceType: Camera.PictureSourceType.CAMERA,
+            allowEdit: true,
+            encodingType: Camera.EncodingType.JPEG,
+            popoverOptions: CameraPopoverOptions,
+            targetWidth: 500,
+            targetHeight: 500,
+            saveToPhotoAlbum: false
+          };
+          $cordovaCamera.getPicture(options).then(function(imageData){
+            $data.image = imageData;
+          })
+        }
+
+
 <ion-view view-title="Home" ng-init="list()"> 
 <ion-nav-buttons side="right">
   <button class="button" ng-click="create()">Help Me!</button>

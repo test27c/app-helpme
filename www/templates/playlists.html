@@ -3,10 +3,9 @@
   <button class="button" ng-click="create()">Help Me!</button>
 </ion-nav-buttons>
   <ion-content>
-<!--       <button class="button button-block button-outline button-positive" ng-click="info()">
-        Todo Info
-      </button> -->
-<div ng-repeat="todo in timelines.todos | orderBy:'-date'"  class="list card">
+<!--       <button class="button button-block button-outline button-positive" ng-click="tododata()">Check the length of timelines</button>
+      <button class="button button-block button-outline button-positive" ng-click="tododatalength()">Check the  length timelines todo</button> -->
+<div ng-repeat="todo in timelines.todos | orderBy:'-date'| limitTo:numberOfItemsToDisplay" class="list card">
   <div class="item item-avatar">
     <img src="{{todo.user_pp}}">
     <h2>{{todo.username}}</h2>
@@ -21,6 +20,7 @@
       {{todo.title}}
     </p>
     <p>{{getDistanceFromLatLonInKm($root.current_pos[0], $root.current_pos[1], todo.user_latitude, todo.user_longitude);}} Km from your location.</p>
+    <p>{{todo.length}}</p>
     <p>
       <a href="#" class="subdued">{{todo.useful_points}} person found this helpful!</a>
       <a href="#" class="subdued">5 Comments</a>
@@ -28,7 +28,7 @@
   </div>
 
   <div class="item tabs tabs-secondary tabs-icon-left">
-    <a class="tab-item" href="#" ng-click="like()">
+    <a class="tab-item" href="#" ng-click="like(todo.id)">
       <i class="icon ion-thumbsup"></i>
       Like
     </a>
@@ -44,9 +44,9 @@
 </div>
 
   <ion-infinite-scroll
-      ng-if="canWeLoadMoreContent()"
-      on-infinite="populateList()" 
-      distance="1%">
+      on-infinite="addMoreItem()" 
+      icon="ion-loading-c"
+      distance="10%">
   </ion-infinite-scroll>    
 
   </ion-content>

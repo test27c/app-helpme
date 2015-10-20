@@ -2,8 +2,40 @@
 
 var helpMe = angular.module('helpMe', ['ionic', 'firebase','ngCordova', 'ngCordovaOauth','ngMap', 'helpMe.controllers', 'helpMe.services', 'helpMe.directives']);
  
-helpMe.run(function($ionicPlatform, $cordovaGeolocation, $rootScope) {
+helpMe.run(function($ionicPlatform, $cordovaGeolocation, $rootScope, GeoAlert) {
     $ionicPlatform.ready(function() {
+
+$ionicPlatform.registerBackButtonAction(function(e) {
+
+  e.preventDefault();
+
+  function showConfirm() {
+    var confirmPopup = $ionicPopup.confirm({
+      title: '<strong>Exit X-Wing Companion?</strong>',
+      template: 'Are you sure you want to exit XWC?'
+    });
+
+    confirmPopup.then(function(res) {
+      if (res) {
+        ionic.Platform.exitApp();
+      } else {
+        // Don't close
+      }
+    });
+  }
+
+  // Is there a page to go back to?
+  if ($rootScope.$viewHistory.backView) {
+    // Go back in history
+    $rootScope.$viewHistory.backView.go();
+  } else {
+    // This is the last page: Show confirmation popup
+    showConfirm();
+  }
+
+  return false;
+}, 101);
+
 
 
   $rootScope.current_pos = []; 
@@ -32,25 +64,25 @@ helpMe.run(function($ionicPlatform, $cordovaGeolocation, $rootScope) {
         if(window.StatusBar) {
             StatusBar.styleDefault();
         }   
-    //Begin the service
-    //hard coded 'target'
-    // var lat = 30.224090;
-    // var long = -92.019843;
-    // function onConfirm(idx) {
-    //   alert('button '+idx+' pressed');
-    // }
+    // Begin the service
+    // hard coded 'target'
+    var lat = -6.1797975;
+    var long = 106.9934987;
+    function onConfirm(idx) {
+      alert('button '+idx+' pressed');
+    }
     
-    // GeoAlert.begin(lat,long, function() {
-    //   console.log('TARGET');
-    //   GeoAlert.end();
-    //   navigator.notification.confirm(
-    //     'You are near a target!',
-    //     onConfirm,
-    //     'Target!',
-    //     ['Cancel','View']
-    //   );
+    GeoAlert.begin(lat,long, function() {
+      console.log('TARGET');
+      GeoAlert.end();
+      navigator.notification.confirm(
+        'You are near a target!',
+        onConfirm,
+        'Target!',
+        ['Cancel','View']
+      );
       
-    // });
+    });
     
   });
 })

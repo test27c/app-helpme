@@ -13,6 +13,7 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
                 $rootScope.first_name = authData.facebook.cachedUserProfile.first_name;
                 $rootScope.last_name = authData.facebook.cachedUserProfile.last_name;
                 $rootScope.pic_url = authData.facebook.cachedUserProfile.picture.data.url;
+                $rootScope.uid = authData.uid;
                 // alert(username);
                 $ionicLoading.hide();
                 $ionicHistory.nextViewOptions({
@@ -41,6 +42,7 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
                 $rootScope.first_name = authData.google.cachedUserProfile.given_name;
                 $rootScope.last_name = authData.google.cachedUserProfile.family_name;
                 $rootScope.pic_url = authData.google.cachedUserProfile.picture;
+                $rootScope.uid = authData.uid;
 
                 $ionicLoading.hide();
                 $ionicHistory.nextViewOptions({
@@ -62,7 +64,40 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
  
 })
 
-.controller('AppCtrl', function($scope, $ionicActionSheet) {
+.controller('AppCtrl', function($scope, $ionicActionSheet, $firebaseObject, $rootScope) {
+
+$scope.onlineUsers = 0;
+
+var listRef = new Firebase('https://fbchat27c.firebaseio.com/presence/');
+var userRef = listRef.push();
+var amOnline = new Firebase('https://fbchat27c.firebaseio.com/.info/connected');
+amOnline.on('value', function(snapshot) { 
+  if (snapshot.val()) {
+    userRef.set(true);
+    userRef.onDisconnect().remove();
+  }
+});
+
+listRef.on('value', function(snap) {
+  $scope.onlineUsers = snap.numChildren();
+});
+
+username_status = $rootScope.username;
+user_pic_url_status = $rootScope.pic_url;
+
+var ref = new Firebase('https://fbchat27c.firebaseio.com');
+var usersRef = ref.child("users");
+usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pic_url_status });
+
+  // userRef.once("value", function(snapshot) {
+  //   alert('test');
+  //   snapshot.child($rootScope.uid).set({ username: username_status, user_pp: user_pic_url_status });
+  //   if(snapshot.child($rootScope.uid).exists()){
+  //     snapshot.child($rootScope.uid).update({ username: username_status, user_pp: user_pic_url_status });
+  //   } else {
+  //     snapshot.child($rootScope.uid).set({ username: username_status, user_pp: user_pic_url_status });
+  //   }
+  // });
 
   $scope.logout = function(){
     $ionicActionSheet.show({
@@ -73,17 +108,12 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
         // add cancel code..
       },
       buttonClicked: function(index) {
-        //Called when one of the non-destructive buttons is clicked,
-        //with the index of the button that was clicked and the button object.
-        //Return true to close the action sheet, or false to keep it opened.
         return true;
       },
       destructiveButtonClicked: function(){
-        //Called when the destructive button is clicked.
-        //Return true to close the action sheet, or false to keep it opened.
         ionic.Platform.exitApp()
       }
-  });
+  }); 
  
      } 
 
@@ -137,12 +167,9 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
   };
 })
 
-.controller('PlaylistsCtrl', function($scope, $cordovaSocialSharing, $cordovaCamera, $compile, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
+////////////////////////////////////////HOME CONTROLLER////////////////////////////////////////////////////////////
 
-  // initialize infinite scroll
-  $scope.canWeLoadMoreContent = function() {
-    return ($scope.timelines.todos.length > 49) ? false : true;
-  }  
+.controller('PlaylistsCtrl', function($scope, $cordovaSocialSharing, $cordovaCamera, $compile, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
 
   // show kilometer
   var position = [];
@@ -156,6 +183,7 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
   fb = new Firebase("https://fbchat27c.firebaseio.com/");
   username_status = $rootScope.username;
   user_pic_url_status = $rootScope.pic_url;
+  var users = fb.child("users");
 
   function take_image(){
     var options = {
@@ -173,12 +201,16 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
 
     $cordovaCamera.getPicture(options).then(function(imageData){
       status_images = imageData;
-      // if(!status_images){
-      //   alert('Image was not captured');
-      // } else{
-      //   alert('New Status :) ' + status_images);
-      // }
     });     
+  }
+
+  // initialize infinite scroll
+  $scope.numberOfItemsToDisplay = 5;
+  // $scope.timelines.todos;
+  $scope.addMoreItem = function(done) {
+    if ($scope.timelines.todos.length > $scope.numberOfItemsToDisplay)
+      $scope.numberOfItemsToDisplay += 5; // load 20 more items
+    $scope.$broadcast('scroll.infiniteScrollComplete'); // need to call this when finish loading more data
   }
 
     // Show kilometer
@@ -205,8 +237,17 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
     return parseFloat(JSON.stringify(d)).toFixed(1);
    }
 
-   $scope.like = function(){
-     alert(($scope.timelines.todos).length);
+   $scope.like = function(index){
+    // var testt = "test";
+    var index = JSON.stringify(index - 1);
+    $scope.timelines.todos[index].push("something");
+    // $scope.timelines.todos[index].useful_points += 1;
+    alert(JSON.stringify($scope.timelines.todos[index]));
+    // var index_ref = "timeline/todos/" + index
+    // var like_status = $firebaseObject(fb.child(index_ref));
+    // like_status.$bindTo($scope, "like_status");
+    // alert(JSON.stringify($scope.like_status.useful_points));
+    // $scope.like_status.user_who_like.push({ user_pic_url_status});
    }
 
   $scope.share_status = function(message, sender) {
@@ -215,15 +256,14 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
 
     // Create todo list
     $scope.list = function(){
-    fbAuth = fb.getAuth();
-    if(fbAuth) {
-        // var syncObject = $firebaseObject(fb.child("users/" + fbAuth.uid));
-        var timelines = $firebaseObject(fb.child("timeline/"));
-        var s = $firebaseObject(fb.child("timeline/"));
-        timelines.$bindTo($scope, "timelines");
+    username_status = $rootScope.username;
+    user_pic_url_status = $rootScope.pic_url;
 
-        var liked_status = $firebaseObject(fb.child('timeline/todos'+($scope.timelines.todos).length));
-    }
+    fbAuth = fb.getAuth();
+      if(fbAuth) {
+        var timelines = $firebaseObject(fb.child("timeline/"));
+        timelines.$bindTo($scope, "timelines");
+      }
     }
 
     $scope.create = function() {
@@ -244,6 +284,7 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
                     $scope.timelines.todos = [];
                 }
                 created_status = (Date.now()).toString();
+                user_id = $scope.timelines.todos.length + 1;
                 user_lat = $scope.current_pos[0];
                 user_long = $scope.current_pos[1];
                 user_image = status_images;
@@ -251,7 +292,8 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
                 user_like= [];
 
 
-                $scope.timelines.todos.push({title: result, 
+                $scope.timelines.todos.push({ id: user_id,
+                                        title: result, 
                                         date: created_status, 
                                         username: username_status, 
                                         user_pp: user_pic_url_status, 
