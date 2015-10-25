@@ -1,6 +1,6 @@
 /* Empty. Add your own CSS if you like */
 .logo-login{
-    background:url('../img/EU_2.jpg');  
+    background:url('../img/splashscreen.jpg');  
     background-repeat:no-repeat;
     background-size:100% 100%;
 }
@@ -13,14 +13,14 @@
 }
 
 .tagline{
-	color: white;
+	color: #C9570A;
 }
 
 .logo-welcome {
     width: 120px;
     height: 120px;
     margin: 0 auto 60px auto;
-    background: url(../img/ionic.png) no-repeat;
+    background: url(../img/logo.png) no-repeat;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     background-size: cover;

@@ -85,6 +85,8 @@ listRef.on('value', function(snap) {
 username_status = $rootScope.username;
 user_pic_url_status = $rootScope.pic_url;
 
+
+// Create users new data in database
 var ref = new Firebase('https://fbchat27c.firebaseio.com');
 var usersRef = ref.child("users");
 usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pic_url_status });
@@ -240,9 +242,38 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
    $scope.like = function(index){
     // var testt = "test";
     var index = JSON.stringify(index - 1);
-    $scope.timelines.todos[index].push("something");
     // $scope.timelines.todos[index].useful_points += 1;
-    alert(JSON.stringify($scope.timelines.todos[index]));
+    // https://fbchat27c.firebaseio.com/timeline/todos/17/user_who_likes
+    if($scope.timelines.todos[index].hasOwnProperty("user_who_likes") !== true) {
+        $scope.timelines.todos[index].user_who_likes = [];
+    }
+
+    if ($scope.timelines.todos[index].user_who_likes.indexOf($rootScope.username) > -1) {
+        //In the array!
+        $scope.timelines.todos[index].useful_points -= 1;
+        var index_hapus = $scope.timelines.todos[index].user_who_likes.indexOf($rootScope.username);
+        // Remove the user
+        if (index_hapus > -1) {
+            $scope.timelines.todos[index].user_who_likes.splice(index_hapus, 1);
+        }
+        // $scope.timelines.todos[index].user_who_likes.remove($rootScope.username);
+    } else {
+        //Not in the array
+        $scope.timelines.todos[index].useful_points += 1;
+        $scope.timelines.todos[index].user_who_likes.push($rootScope.username);
+    }
+    // $scope.timelines.todos[index].user_who_likes.push($rootScope.username);
+   }
+
+   $scope.unlike = function(index){
+    // var testt = "test";
+    var index = JSON.stringify(index - 1);
+    $scope.timelines.todos[index].useful_points -= 1;
+    $scope.likeClicked[selectedIndex]=true;
+    $scope.timelines.todos[index].user_who_likes.remove($rootScope.username);
+    // $scope.timelines.todos[index].push("something");
+    // $scope.timelines.todos[index].useful_points += 1;
+    // alert(JSON.stringify($scope.timelines.todos[index].useful_points+1));
     // var index_ref = "timeline/todos/" + index
     // var like_status = $firebaseObject(fb.child(index_ref));
     // like_status.$bindTo($scope, "like_status");
@@ -289,7 +320,6 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
                 user_long = $scope.current_pos[1];
                 user_image = status_images;
                 useful_point = 0;
-                user_like= [];
 
 
                 $scope.timelines.todos.push({ id: user_id,
@@ -300,8 +330,7 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
                                         user_latitude: user_lat, 
                                         user_longitude: user_long,
                                         useful_points: useful_point,
-                                        user_likes: user_like,
-                                        user_images: user_image
+                                        user_images: user_image,
                                       });
             } else {
                 alert("Action not completed");
