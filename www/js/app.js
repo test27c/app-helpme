@@ -7,7 +7,7 @@ helpMe.run(function($ionicPlatform, $cordovaGeolocation, $rootScope, GeoAlert) {
 
 $ionicPlatform.registerBackButtonAction(function(e) {
 
-  e.preventDefault();
+  e.preventDefault(); 
 
   function showConfirm() {
     var confirmPopup = $ionicPopup.confirm({
@@ -66,8 +66,8 @@ $ionicPlatform.registerBackButtonAction(function(e) {
         }   
     // Begin the service
     // hard coded 'target'
-    var lat = -6.1797975;
-    var long = 106.9934987;
+    var lat = $rootScope.single_latitude;
+    var long = $rootScope.single_longitude;
     function onConfirm(idx) {
       alert('button '+idx+' pressed');
     }
@@ -141,15 +141,16 @@ helpMe.config(function($stateProvider, $urlRouterProvider){
       }
     })
 
-  .state('app.single', {
-    url: '/playlists/:playlistId',
+  .state('app.singlemap', {
+    url: '/playlists/:mapId',
     views: {
       'menuContent': {
-        templateUrl: 'templates/playlist.html',
-        controller: 'PlaylistCtrl'
+        templateUrl: 'templates/mapsingle.html',
+        controller: 'MapSingleCtrl'
       }
     }
   });
+
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/signUp');
 

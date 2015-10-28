@@ -20,7 +20,6 @@
       {{todo.title}}
     </p>
     <p>{{getDistanceFromLatLonInKm($root.current_pos[0], $root.current_pos[1], todo.user_latitude, todo.user_longitude);}} Km from your location.</p>
-    <p>{{todo.length}}</p>
     <p>
       <a href="#" class="subdued">{{todo.useful_points}} person found this helpful!</a>
       <!-- <a href="#" class="subdued">5 Comments</a> -->
@@ -30,15 +29,12 @@
   <div class="item tabs tabs-secondary tabs-icon-left">
     <a class="tab-item" href="#" ng-click="like(todo.id)">
       <i class="icon ion-thumbsup"></i>
-      Vote
+      Like
     </a>
-    <a class="tab-item" href="#" ng-click="unlike(todo.id)">
-      <i class="icon ion-thumbsdown"></i>
-      Unvote
-    </a>
-    <a class="tab-item" href="#">
+    <a class="tab-item" href="#" ng-click="gotolocation(todo.id)">
+    <!-- <a class="tab-item" href="#"> -->
       <i class="icon ion-map"></i>
-      Location
+      Map
     </a>
     <a class="tab-item" href="#" ng-click="share_status(todo.title, todo.username)">
       <i class="icon ion-share"></i>

@@ -6,7 +6,7 @@ angular.module('helpMe.services', [])
     var usersRef = new Firebase(endPoint);
     return $firebaseAuth(usersRef);
   })
-
+ 
 .factory('GeoAlert', function() {
    console.log('GeoAlert service instantiated');
    var interval;

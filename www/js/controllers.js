@@ -121,7 +121,17 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
 
 })
 
-.controller('MapCtrl', function($scope, $rootScope, $ionicPopup) {
+.controller('MapCtrl', function($scope, $rootScope, $ionicPopup, Auth, $firebaseObject) {
+
+  fb = new Firebase("https://fbchat27c.firebaseio.com/");
+    $scope.list = function(){
+
+    fbAuth = fb.getAuth();
+      if(fbAuth) {
+        var map_all = $firebaseObject(fb.child("timeline/"));
+        map_all.$bindTo($scope, "map_all");
+      }
+    }
 
   var position = [];
   $scope.current_pos = $rootScope.current_pos;
@@ -130,6 +140,31 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
 
   $scope.panelName = "petunjuk";
   $scope.end = "-6.3683426,106.8331007";
+  $scope.start = $rootScope.current_pos[0] + "," + $rootScope.current_pos[1];
+
+  $scope.$on('mapInitialized', function(evt, map) {
+    var infoWindow = map.infoWindows[1];
+    // $scope.zoomChanged = function(e) {
+    //   infoWindow.setContent('Zoom: ' + map.getZoom());
+    //   map.setCenter(infoWindow.getPosition());
+    // }
+  });
+
+var index = JSON.stringify(index - 1);
+
+})
+
+.controller('MapSingleCtrl', function($scope, $rootScope, $ionicPopup) {
+
+  var position = [];
+  $scope.current_pos = $rootScope.current_pos;
+  $scope.directionpanel = "directionpanel";
+
+
+  $scope.panelName = "petunjuk";
+  // $scope.latitude = $rootScope.single_latitude;
+  // $scope.longitude = $rootScope.single_longitude;
+  $scope.end = $rootScope.single_latitude + "," + $rootScope.single_longitude;
   $scope.start = $rootScope.current_pos[0] + "," + $rootScope.current_pos[1];
 
 
@@ -171,7 +206,7 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
 
 ////////////////////////////////////////HOME CONTROLLER////////////////////////////////////////////////////////////
 
-.controller('PlaylistsCtrl', function($scope, $cordovaSocialSharing, $cordovaCamera, $compile, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
+.controller('PlaylistsCtrl', function($scope, $cordovaSocialSharing, $cordovaCamera, $compile, $state, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
 
   // show kilometer
   var position = [];
@@ -240,10 +275,7 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
    }
 
    $scope.like = function(index){
-    // var testt = "test";
     var index = JSON.stringify(index - 1);
-    // $scope.timelines.todos[index].useful_points += 1;
-    // https://fbchat27c.firebaseio.com/timeline/todos/17/user_who_likes
     if($scope.timelines.todos[index].hasOwnProperty("user_who_likes") !== true) {
         $scope.timelines.todos[index].user_who_likes = [];
     }
@@ -256,30 +288,36 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
         if (index_hapus > -1) {
             $scope.timelines.todos[index].user_who_likes.splice(index_hapus, 1);
         }
-        // $scope.timelines.todos[index].user_who_likes.remove($rootScope.username);
     } else {
         //Not in the array
         $scope.timelines.todos[index].useful_points += 1;
         $scope.timelines.todos[index].user_who_likes.push($rootScope.username);
     }
-    // $scope.timelines.todos[index].user_who_likes.push($rootScope.username);
    }
 
-   $scope.unlike = function(index){
-    // var testt = "test";
-    var index = JSON.stringify(index - 1);
-    $scope.timelines.todos[index].useful_points -= 1;
-    $scope.likeClicked[selectedIndex]=true;
-    $scope.timelines.todos[index].user_who_likes.remove($rootScope.username);
-    // $scope.timelines.todos[index].push("something");
-    // $scope.timelines.todos[index].useful_points += 1;
-    // alert(JSON.stringify($scope.timelines.todos[index].useful_points+1));
-    // var index_ref = "timeline/todos/" + index
-    // var like_status = $firebaseObject(fb.child(index_ref));
-    // like_status.$bindTo($scope, "like_status");
-    // alert(JSON.stringify($scope.like_status.useful_points));
-    // $scope.like_status.user_who_like.push({ user_pic_url_status});
+   $scope.gotolocation = function(index){
+    alert(index);
+     var index = JSON.stringify(index - 1);
+     $rootScope.single_latitude = $scope.timelines.todos[index].user_latitude;
+     $rootScope.single_longitude = $scope.timelines.todos[index].user_longitude;
+    $state.go('app.singlemap');
    }
+
+   // $scope.unlike = function(index){
+   //  // var testt = "test";
+   //  var index = JSON.stringify(index - 1);
+   //  $scope.timelines.todos[index].useful_points -= 1;
+   //  $scope.likeClicked[selectedIndex]=true;
+   //  $scope.timelines.todos[index].user_who_likes.remove($rootScope.username);
+   //  // $scope.timelines.todos[index].push("something");
+   //  // $scope.timelines.todos[index].useful_points += 1;
+   //  // alert(JSON.stringify($scope.timelines.todos[index].useful_points+1));
+   //  // var index_ref = "timeline/todos/" + index
+   //  // var like_status = $firebaseObject(fb.child(index_ref));
+   //  // like_status.$bindTo($scope, "like_status");
+   //  // alert(JSON.stringify($scope.like_status.useful_points));
+   //  // $scope.like_status.user_who_like.push({ user_pic_url_status});
+   // }
 
   $scope.share_status = function(message, sender) {
     $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\n\nInfo by: "+ sender , "", null, "#Help Me!");

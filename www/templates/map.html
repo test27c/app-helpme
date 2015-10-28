@@ -1,24 +1,16 @@
-<ion-view view-title="Map">
+<ion-view view-title="Map" ng-init="list()">
     <ion-content scroll="false">
-        <map center=" $root.current_pos[0], $root.current_pos[1]" zoom="15" disable-default-u-i="true">
-          <directions 
-            draggable="false"
-            avoidTolls="true"
-            provideRouteAlternatives="true"
-            panel="directionpanel"
-            travel-mode="DRIVING"
-            origin="{{start}}"
-            destination="{{end}}">
-          </directions>
-        </map>
-    <ion-scroll>
-  <div id="directionpanel" style="width:100%"><h2>Direction</h2>
+  <map center="{{map_all.todos[0].user_latitude + ',' + map_all.todos[0].user_longitude}}" zoom="11" disable-default-u-i="true" style="height:100%">
+  <marker ng-repeat="todo in map_all.todos"  position="{{todo.user_latitude + ',' + todo.user_longitude}}" ></marker>
+  <info-window id="1" position="{{map_all.todos[0].user_latitude + ',' + map_all.todos[0].user_longitude}}" visible="true">
+    <div ng-non-bindable="">{{map_all.todos[0].title}}</div>
+  </info-window>
+  </map>
+  <!--   <ion-scroll>
+  <div id="directionpanel" style="width:100%"><h2>{{map_all.todos[0].user_latitude + "," + map_all.todos[0].user_longitude}}</h2><p>test</p>
     </div>
-  </ion-scroll>
-
-    </ion-content>
-    <ion-footer-bar class="bar-assertive">
-      <a ng-click="clicked()" class="button button-icon icon ion-navigate">{{panelName}}</a>
-    </ion-footer-bar>
-  </ion-content>
+  <div ng-repeat="todo in map_all.todos">
+    <p>{{todo.user_latitude + "," + todo.user_longitude}}</p>
+  </div>
+  </ion-scroll> -->
 </ion-view>
