@@ -34,3 +34,12 @@ map {
 .scroll {
   height: 100%;
 }
+
+.item-checkbox-img {
+  vertical-align: middle;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  height:100%;
+  width: 25%;
+}

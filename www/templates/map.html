@@ -1,16 +1,16 @@
 <ion-view view-title="Map" ng-init="list()">
-    <ion-content scroll="false">
-  <map center="{{map_all.todos[0].user_latitude + ',' + map_all.todos[0].user_longitude}}" zoom="11" disable-default-u-i="true" style="height:100%">
-  <marker ng-repeat="todo in map_all.todos"  position="{{todo.user_latitude + ',' + todo.user_longitude}}" ></marker>
-  <info-window id="1" position="{{map_all.todos[0].user_latitude + ',' + map_all.todos[0].user_longitude}}" visible="true">
+    <ion-content>
+  <map center="{{map_all.todos[0].user_latitude + ',' + map_all.todos[0].user_longitude}}" zoom="11" disable-default-u-i="true">
+  <marker ng-repeat="todo in map_all.todos" icon="{{'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=' + $index +'|FE6256|000000'}}" position="{{todo.user_latitude + ',' + todo.user_longitude}}" ></marker>
+<!--   <info-window id="1" position="{{map_all.todos[0].user_latitude + ',' + map_all.todos[0].user_longitude}}" visible="true">
     <div ng-non-bindable="">{{map_all.todos[0].title}}</div>
-  </info-window>
+  </info-window> -->
   </map>
-  <!--   <ion-scroll>
-  <div id="directionpanel" style="width:100%"><h2>{{map_all.todos[0].user_latitude + "," + map_all.todos[0].user_longitude}}</h2><p>test</p>
-    </div>
+    <ion-scroll>
+  <div class="scroll">
+    <p>Around Us</p>
   <div ng-repeat="todo in map_all.todos">
-    <p>{{todo.user_latitude + "," + todo.user_longitude}}</p>
+    <p>{{ $index + '. Something Happened at ' + todo.user_latitude + "," + todo.user_longitude}}</p>
   </div>
-  </ion-scroll> -->
+  </ion-scroll>
 </ion-view>
