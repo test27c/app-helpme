@@ -1,11 +1,9 @@
-<ion-view view-title="Home" ng-init="list()"> 
-<ion-nav-buttons side="right">
+<ion-view view-title="Your Request" ng-init="list()"> 
+<!-- <ion-nav-buttons side="right">
   <button class="button" ng-click="create()">Help Me!</button>
-</ion-nav-buttons>
+</ion-nav-buttons> -->
   <ion-content>
-<!--       <button class="button button-block button-outline button-positive" ng-click="tododata()">Check the length of timelines</button>
-      <button class="button button-block button-outline button-positive" ng-click="tododatalength()">Check the  length timelines todo</button> -->
-<div ng-repeat="todo in timelines.todos | orderBy:'-date'| limitTo:numberOfItemsToDisplay" class="list card">
+<div ng-show="todo.username == $root.username" ng-repeat="todo in timelines.todos | orderBy:'-date'| limitTo:numberOfItemsToDisplay" class="list card">
   <div class="item item-avatar">
     <img src="{{todo.user_pp}}">
     <h2>{{todo.username}}</h2>

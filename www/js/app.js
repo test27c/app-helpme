@@ -149,6 +149,16 @@ helpMe.config(function($stateProvider, $urlRouterProvider){
         controller: 'MapSingleCtrl'
       }
     }
+  })
+
+  .state('app.request', {
+    url: '/request',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/request.html',
+        controller: 'RequestCtrl'
+      }
+    }
   });
 
   // if none of the above states are matched, use this as the fallback
