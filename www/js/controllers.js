@@ -412,7 +412,7 @@ var index = JSON.stringify(index - 1);
     }
 } )
 
-.controller('RequestCtrl', function($scope, $cordovaSocialSharing, $cordovaCamera, $compile, $state, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
+.controller('RequestCtrl', function($scope, $cordovaSocialSharing, $filter, $cordovaCamera, $compile, $state, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
 
   // show kilometer
   var position = [];
@@ -518,11 +518,12 @@ var index = JSON.stringify(index - 1);
    }
 
 
-  $scope.share_status = function(message, sender, image) {
+  $scope.share_status = function(message, sender, image, date) {
+    var date = $filter('amCalendar')(date)
     if(image){
-      $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\nInfo by: "+ sender , "", 'data:image/jpeg;base64,' + image , "#Help Me!");
+      $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\nInfo by: "+ sender + '\n' + date , "", 'data:image/jpeg;base64,' + image , "#Help Me!");
     } else {
-      $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\nInfo by: "+ sender , "", null, "#Help Me!");
+      $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\nInfo by: "+ sender + '\n' + date , "", null, "#Help Me!");
     }
   }
 
