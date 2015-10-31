@@ -212,7 +212,7 @@ var index = JSON.stringify(index - 1);
 
 ////////////////////////////////////////HOME CONTROLLER////////////////////////////////////////////////////////////
 
-.controller('PlaylistsCtrl', function($scope, $cordovaSocialSharing, $cordovaCamera, $compile, $state, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
+.controller('PlaylistsCtrl', function($scope, $cordovaSocialSharing, $filter, $cordovaCamera, $compile, $state, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
 
   // show kilometer
   var position = [];
@@ -341,8 +341,13 @@ var index = JSON.stringify(index - 1);
    }
 
 
-  $scope.share_status = function(message, sender) {
-    $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\n\nInfo by: "+ sender , "", null, "#Help Me!");
+  $scope.share_status = function(message, sender, image, date) {
+    var date = $filter('amCalendar')(date)
+    if(image){
+      $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\nInfo by: "+ sender + '\n' + date , "", 'data:image/jpeg;base64,' + image , "#Help Me!");
+    } else {
+      $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\nInfo by: "+ sender + '\n' + date , "", null, "#Help Me!");
+    }
   }
 
     // Create todo list
@@ -374,6 +379,10 @@ var index = JSON.stringify(index - 1);
                 if($scope.timelines.hasOwnProperty("todos") !== true) {
                     $scope.timelines.todos = [];
                 }
+            if(result == null){
+               return;
+            }
+
                 created_status = (Date.now()).toString();
                 user_id = $scope.timelines.todos.length + 1;
                 user_lat = $scope.current_pos[0];
@@ -509,8 +518,12 @@ var index = JSON.stringify(index - 1);
    }
 
 
-  $scope.share_status = function(message, sender) {
-    $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\n\nInfo by: "+ sender , "", null, "#Help Me!");
+  $scope.share_status = function(message, sender, image) {
+    if(image){
+      $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\nInfo by: "+ sender , "", 'data:image/jpeg;base64,' + image , "#Help Me!");
+    } else {
+      $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\nInfo by: "+ sender , "", null, "#Help Me!");
+    }
   }
 
     // Create todo list
