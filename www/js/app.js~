@@ -159,16 +159,6 @@ helpMe.config(function($stateProvider, $urlRouterProvider){
         controller: 'RequestCtrl'
       }
     }
-  })
-
-  .state('app.panic', {
-    url: '/panic',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/panic.html',
-        controller: 'PanicCtrl'
-      }
-    }
   });
 
   // if none of the above states are matched, use this as the fallback

@@ -527,5 +527,10 @@ var index = JSON.stringify(index - 1);
 
 } )
 
+.controller('PanicCtrl', function($scope, $stateParams) {
+
+})
+
+
 .controller('PlaylistCtrl', function($scope, $stateParams) {
 });
