@@ -39,17 +39,18 @@ $ionicPlatform.registerBackButtonAction(function(e) {
 
 
   $rootScope.current_pos = []; 
-
-  navigator.geolocation.getCurrentPosition(geolocationSuccess, geolocationError);
-
+  $rootScope.current_static_pos = []; 
   navigator.geolocation.watchPosition(function (position) {
-    $rootScope.current_pos[0] = position.coords.latitude;
-    $rootScope.current_pos[1] = position.coords.longitude;
+    $rootScope.$apply(function() {
+      $rootScope.current_pos[0] = position.coords.latitude;
+      $rootScope.current_pos[1] = position.coords.longitude;
+    });
   }, geolocationError);
 
+  navigator.geolocation.getCurrentPosition(geolocationSuccess, geolocationError);
    function geolocationSuccess(position) {
-    $rootScope.current_pos.push(position.coords.latitude);
-    $rootScope.current_pos.push(position.coords.longitude);
+    $rootScope.current_static_pos[0] = position.coords.latitude;
+    $rootScope.current_static_pos[1] = position.coords.longitude;
   }
 
    function geolocationError(err) {
@@ -66,8 +67,8 @@ $ionicPlatform.registerBackButtonAction(function(e) {
         }   
     // Begin the service
     // hard coded 'target'
-    var lat = $rootScope.single_latitude;
-    var long = $rootScope.single_longitude;
+    var lat = $rootScope.current_pos[0];
+    var long = $rootScope.current_pos[1];
     function onConfirm(idx) {
       alert('button '+idx+' pressed');
     }

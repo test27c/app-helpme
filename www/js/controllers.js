@@ -64,7 +64,7 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
  
 })
 
-.controller('AppCtrl', function($scope, $ionicActionSheet, $firebaseObject, $rootScope) {
+.controller('AppCtrl', function($scope, $ionicActionSheet, $ionicHistory, $firebaseObject, $rootScope) {
 
 $scope.onlineUsers = 0;
 
@@ -113,6 +113,8 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
         return true;
       },
       destructiveButtonClicked: function(){
+        $ionicHistory.clearHistory();
+        $ionicHistory.clearCache();
         ionic.Platform.exitApp()
       }
   }); 
@@ -133,30 +135,27 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
       }
     }
 
-  var position = [];
-  $scope.current_pos = $rootScope.current_pos;
-  $scope.directionpanel = "directionpanel";
+         $scope.$on('mapInitialized', function (event, map) {
+         $scope.objMapa = map;
+         });
 
+         $scope.showInfoWindow = function (event, lat, lon, title) {
+            var lat_new = lat + 0.01;
+            var infowindow = new google.maps.InfoWindow();
+            var center = new google.maps.LatLng(lat_new,lon);
 
-  $scope.panelName = "petunjuk";
-  $scope.end = "-6.3683426,106.8331007";
-  $scope.start = $rootScope.current_pos[0] + "," + $rootScope.current_pos[1];
+            infowindow.setContent(
+                '<div style="text-align: center;"><p>' + title + '<br>' +
+                'Location: ' + lat + ',' + lon + '</p><a href="#" class="map-button" style="text-decoration: none;">Give Hand</a></div>'
+                );
 
-  $scope.$on('mapInitialized', function(evt, evtMap) {
-    map = evtMap;
-    marker = map.markers[0];
-  });
-  $scope.centerChanged = function(event) {
-    $timeout(function() {
-      map.panTo(marker.getPosition());
-    }, 3000);
-  }
-  $scope.click = function(event) {
-    map.setZoom(8);
-    map.setCenter(marker.getPosition());
-  }
+            infowindow.setPosition(center);
+            infowindow.open($scope.objMapa);
+         };
 
-var index = JSON.stringify(index - 1);
+  // $scope.openMenu = function () {
+  //   $ionicSideMenuDelegate.toggleRight();
+  // };
 
 })
 
@@ -286,10 +285,10 @@ var index = JSON.stringify(index - 1);
         $scope.timelines.todos[index].user_who_likes = [];
     }
 
-    if ($scope.timelines.todos[index].user_who_likes.indexOf($rootScope.username) > -1) {
+    if ($scope.timelines.todos[index].user_who_likes.indexOf($rootScope.uid) > -1) {
         //In the array!
         $scope.timelines.todos[index].useful_points -= 1;
-        var index_hapus = $scope.timelines.todos[index].user_who_likes.indexOf($rootScope.username);
+        var index_hapus = $scope.timelines.todos[index].user_who_likes.indexOf($rootScope.uid);
         // Remove the user
         if (index_hapus > -1) {
             $scope.timelines.todos[index].user_who_likes.splice(index_hapus, 1);
@@ -297,7 +296,7 @@ var index = JSON.stringify(index - 1);
     } else {
         //Not in the array
         $scope.timelines.todos[index].useful_points += 1;
-        $scope.timelines.todos[index].user_who_likes.push($rootScope.username);
+        $scope.timelines.todos[index].user_who_likes.push($rootScope.uid);
     }
    }
 
@@ -307,10 +306,10 @@ var index = JSON.stringify(index - 1);
         $scope.timelines.todos[index].helper = [];
     }
 
-    if ($scope.timelines.todos[index].helper.indexOf($rootScope.username) > -1) {
+    if ($scope.timelines.todos[index].helper.indexOf($rootScope.uid) > -1) {
         //In the array!
         $scope.timelines.todos[index].help_points -= 1;
-        var index_hapus = $scope.timelines.todos[index].helper.indexOf($rootScope.username);
+        var index_hapus = $scope.timelines.todos[index].helper.indexOf($rootScope.uid);
         // Remove the user
         if (index_hapus > -1) {
             $scope.timelines.todos[index].helper.splice(index_hapus, 1);
@@ -318,7 +317,7 @@ var index = JSON.stringify(index - 1);
     } else {
         //Not in the array
         $scope.timelines.todos[index].help_points += 1;
-        $scope.timelines.todos[index].helper.push($rootScope.username);
+        $scope.timelines.todos[index].helper.push($rootScope.uid);
     }
    }
 
@@ -463,10 +462,10 @@ var index = JSON.stringify(index - 1);
         $scope.timelines.todos[index].user_who_likes = [];
     }
 
-    if ($scope.timelines.todos[index].user_who_likes.indexOf($rootScope.username) > -1) {
+    if ($scope.timelines.todos[index].user_who_likes.indexOf($rootScope.uid) > -1) {
         //In the array!
         $scope.timelines.todos[index].useful_points -= 1;
-        var index_hapus = $scope.timelines.todos[index].user_who_likes.indexOf($rootScope.username);
+        var index_hapus = $scope.timelines.todos[index].user_who_likes.indexOf($rootScope.uid);
         // Remove the user
         if (index_hapus > -1) {
             $scope.timelines.todos[index].user_who_likes.splice(index_hapus, 1);
@@ -474,7 +473,7 @@ var index = JSON.stringify(index - 1);
     } else {
         //Not in the array
         $scope.timelines.todos[index].useful_points += 1;
-        $scope.timelines.todos[index].user_who_likes.push($rootScope.username);
+        $scope.timelines.todos[index].user_who_likes.push($rootScope.uid);
     }
    }
 
@@ -484,10 +483,10 @@ var index = JSON.stringify(index - 1);
         $scope.timelines.todos[index].helper = [];
     }
 
-    if ($scope.timelines.todos[index].helper.indexOf($rootScope.username) > -1) {
+    if ($scope.timelines.todos[index].helper.indexOf($rootScope.uid) > -1) {
         //In the array!
         $scope.timelines.todos[index].help_points -= 1;
-        var index_hapus = $scope.timelines.todos[index].helper.indexOf($rootScope.username);
+        var index_hapus = $scope.timelines.todos[index].helper.indexOf($rootScope.uid);
         // Remove the user
         if (index_hapus > -1) {
             $scope.timelines.todos[index].helper.splice(index_hapus, 1);
@@ -495,7 +494,7 @@ var index = JSON.stringify(index - 1);
     } else {
         //Not in the array
         $scope.timelines.todos[index].help_points += 1;
-        $scope.timelines.todos[index].helper.push($rootScope.username);
+        $scope.timelines.todos[index].helper.push($rootScope.uid);
     }
    }
 

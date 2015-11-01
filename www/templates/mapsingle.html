@@ -2,7 +2,7 @@
 <ion-nav-buttons side="right">
   <button class="button" ng-click="chat()">Chat</button>
 </ion-nav-buttons>
-    <ion-content scroll="false">
+    <ion-content scroll="false" class="top">
         <map center=" $root.current_pos[0], $root.current_pos[1]" zoom="15" disable-default-u-i="true">
           <directions 
             draggable="false"
@@ -10,16 +10,15 @@
             provideRouteAlternatives="true"
             panel="directionpanel"
             travel-mode="DRIVING"
-            origin="{{start}}"
+            origin="{{$root.current_pos[0] + ',' + $root.current_pos[1]}}"
             destination="{{end}}">
           </directions>
         </map>
-    <ion-scroll>
-  <div id="directionpanel" style="width:100%"><h2>Direction</h2>
-    </div>
-  </ion-scroll>
-    <ion-footer-bar class="bar-assertive">
-      <a ng-click="clicked()" class="button button-icon icon ion-navigate">{{panelName}}</a>
-    </ion-footer-bar>
+      <ion-footer-bar class="bar-assertive">
+        <h2 style="color: white;">Directions</h2>
+      </ion-footer-bar>
+    </ion-content>
+  <ion-content class="bottom">
+    <div id="directionpanel" style="width:100%"></div>
   </ion-content>
 </ion-view>
