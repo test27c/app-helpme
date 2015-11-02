@@ -8,7 +8,7 @@
   <div class="item item-avatar">
     <img src="{{status.user_pp}}">
     <h2>{{status.username}}</h2>
-    <p>{{status.date}}</p>
+    <p><span am-time-ago="{{status.date}}"></p>
     <img class="item-checkbox-img" ng-show="status.status != false" src="img/helped.png">
     <img class="item-checkbox-img" ng-show="status.status != true" src="img/ongoing.png">
     <!-- <p>{{todo.date | amCalendar }}</p> -->
@@ -28,16 +28,14 @@
       </label>
       <button class="button button-block icon-left ion-compose button-positive button-outline" ng-click="new_comment()">Post comments</button>
     <ion-list>
-      <ion-item ng-repeat="comment in status.comments | orderBy:'-date'">
-        <div class="item item-avatar">
+      <ion-item class="item-remove-animate item-thumbnail-left item-icon-right" ng-repeat="comment in status.comments | orderBy:'-date'">
           <img src="{{comment.user_pp}}">
           <h2>{{comment.username}}</h2>
           <p><span am-time-ago="{{comment.date}}"></p>
-        </div>
-        <div class="item item-body">
           <p>{{comment.comments}}</p>
-        </div>
-
+        <ion-option-button class="button-assertive" ng-click="remove(chat)">
+          Delete
+        </ion-option-button>
       </ion-item>
     </ion-list>
   </div>

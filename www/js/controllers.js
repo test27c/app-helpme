@@ -547,6 +547,19 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
 
 })
 
+.controller('YourProfileCtrl', function($scope, $firebaseObject ,$rootScope) {
+  fb = new Firebase("https://fbchat27c.firebaseio.com/");
+    $scope.list = function(){
+    user_index = $rootScope.uid;
+    fbAuth = fb.getAuth();
+      if(fbAuth) {
+        var timelines = $firebaseObject(fb.child("users/" + user_index));
+        timelines.$bindTo($scope, "user");
+      }
+    }
+
+})
+
 
 .controller('StatusCtrl', function($scope, $firebaseObject ,$ionicPopup, $rootScope) {
   fb = new Firebase("https://fbchat27c.firebaseio.com/");
@@ -570,7 +583,7 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
               }
               comment = this.txtcomment;
               alert(comment);
-            if(this.txtcomment == ""){
+            if(comment == null){
                return;
             }
                 alert(JSON.stringify($scope.status.comments));

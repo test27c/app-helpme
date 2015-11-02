@@ -161,6 +161,16 @@ helpMe.config(function($stateProvider, $urlRouterProvider){
       }
     }
   })
+  
+  .state('app.yourprofile', {
+    url: '/yourprofile',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/yourprofile.html',
+        controller: 'YourProfileCtrl'
+      }
+    }
+  })
 
   .state('app.request', {
     url: '/request',
