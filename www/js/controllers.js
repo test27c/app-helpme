@@ -89,7 +89,7 @@ user_pic_url_status = $rootScope.pic_url;
 // Create users new data in database
 var ref = new Firebase('https://fbchat27c.firebaseio.com');
 var usersRef = ref.child("users");
-usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pic_url_status });
+usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pic_url_status, reputation: 0});
 
   // userRef.once("value", function(snapshot) {
   //   alert('test');
@@ -339,6 +339,13 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
     $state.go('app.singlemap');
    }
 
+   $scope.gotostatus = function(index){
+    // alert(index);
+     var index = JSON.stringify(index - 1);
+     $rootScope.status_index = index;
+    $state.go('app.status');
+   }
+
 
   $scope.share_status = function(message, sender, image, date) {
     var date = $filter('amCalendar')(date)
@@ -387,6 +394,7 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
                 user_lat = $scope.current_pos[0];
                 user_long = $scope.current_pos[1];
                 user_image = status_images;
+                status_uid = $root.uid;
                 useful_point = 0;
                 help_point = 0;
                 done = false;
@@ -402,7 +410,8 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
                                         useful_points: useful_point,
                                         user_images: user_image,
                                         status: done,
-                                        help_points: help_point
+                                        help_points: help_point,
+                                        user_uid : status_uid,
                                       });
             } else {
                 alert("Action not completed");
@@ -502,11 +511,6 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
       var index = JSON.stringify(index - 1);
       $scope.timelines.todos[index].status = !$scope.timelines.todos[index].status;
     };
-    
-   $scope.comments = function(index){
-    var index = JSON.stringify(index - 1);
-    alert(index);
-   }
 
    $scope.gotolocation = function(index){
     // alert(index);
@@ -526,7 +530,6 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
     }
   }
 
-    // Create todo list
     $scope.list = function(){
     username_status = $rootScope.username;
     user_pic_url_status = $rootScope.pic_url;
@@ -545,5 +548,45 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
 })
 
 
-.controller('PlaylistCtrl', function($scope, $stateParams) {
+.controller('StatusCtrl', function($scope, $firebaseObject ,$ionicPopup, $rootScope) {
+  fb = new Firebase("https://fbchat27c.firebaseio.com/");
+  created_status = (Date.now()).toString();
+  user_pic_url_comment = $rootScope.pic_url;
+  status_uid = $rootScope.uid;
+  username_status = $rootScope.username;
+
+    $scope.list = function(){
+    fbAuth = fb.getAuth();
+      if(fbAuth) {
+        var timelines = $firebaseObject(fb.child("timeline/todos/" + $rootScope.status_index));
+        timelines.$bindTo($scope, "status");
+      }
+    }
+
+    $scope.new_comment = function(){
+            if(this.txtcomment !== "") {
+              if($scope.status.hasOwnProperty("comments") !== true) {
+                  $scope.status.comments = [];
+              }
+              comment = this.txtcomment;
+              alert(comment);
+            if(this.txtcomment == ""){
+               return;
+            }
+                alert(JSON.stringify($scope.status.comments));
+                $scope.status.comments.push({comments: comment, 
+                                        date: created_status, 
+                                        username: username_status, 
+                                        user_pp: user_pic_url_comment, 
+                                        // user_latitude: user_lat, 
+                                        // user_longitude: user_long,
+                                        // useful_points: useful_point,
+                                        // user_images: user_image,
+                                        // status: done,
+                                        // help_points: help_point,
+                                        user_uid : status_uid,
+                                      });
+    this.txtcomment = "";
+            } 
+    }
 });

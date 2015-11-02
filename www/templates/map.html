@@ -1,4 +1,4 @@
-<ion-view view-title="Map" ng-init="list()">
+<ion-view view-title="Around us" ng-init="list()">
   <ion-content scroll="false" data-tap-disabled="true" >
     <map center="{{$root.current_static_pos[0] + ',' + $root.current_static_pos[1]}}" zoom="11" disable-default-u-i="true">
       <div ng-repeat="todo in map_all.todos | filter:{status:false}">
