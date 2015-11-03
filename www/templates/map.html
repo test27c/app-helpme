@@ -1,8 +1,8 @@
-<ion-view view-title="Around us" ng-init="list()">
+<ion-view view-title="Around us" cache-view="false" ng-init="list()">
   <ion-content scroll="false" data-tap-disabled="true" >
     <map center="{{$root.current_static_pos[0] + ',' + $root.current_static_pos[1]}}" zoom="11" disable-default-u-i="true">
       <div ng-repeat="todo in map_all.todos | filter:{status:false}">
-    <marker icon="{{'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=' + ($index + 1) +'|FE6256|000000'}}" position="{{todo.user_latitude + ',' + todo.user_longitude}}" on-click="showInfoWindow(event, todo.user_latitude, todo.user_longitude, todo.title)"></marker>
+    <marker icon="{{'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=' + ($index + 1) +'|FE6256|000000'}}" position="{{todo.user_latitude + ',' + todo.user_longitude}}" on-click="showInfoWindow(event, todo.user_latitude, todo.user_longitude, todo.title, todo.id)"></marker>
     </div>
   <!--   <info-window id="1" position="{{map_all.todos[0].user_latitude + ',' + map_all.todos[0].user_longitude}}" visible="true">
       <div ng-non-bindable="">{{map_all.todos[0].title}}</div>

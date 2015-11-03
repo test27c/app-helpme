@@ -134,18 +134,21 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
          $scope.objMapa = map;
          });
 
-         $scope.showInfoWindow = function (event, lat, lon, title) {
+         $scope.showInfoWindow = function (event, lat, lon, title, id) {
+          var index = JSON.stringify(id - 1);
             var lat_new = lat + 0.01;
             var infowindow = new google.maps.InfoWindow();
             var center = new google.maps.LatLng(lat_new,lon);
+            $rootScope.status_index = index;
 
             infowindow.setContent(
                 '<div style="text-align: center;"><p>' + title + '<br>' +
-                'Location: ' + lat + ',' + lon + '</p><a href="#" class="map-button" style="text-decoration: none;">Give Hand</a></div>'
+                'Location: ' + lat + ',' + lon + '</p><a href="#/app/status" class="map-button" style="text-decoration: none;">Give Hand</a></div>'
                 );
 
             infowindow.setPosition(center);
             infowindow.open($scope.objMapa);
+
          };
 
 })
@@ -569,13 +572,125 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
   user_pic_url_comment = $rootScope.pic_url;
   status_uid = $rootScope.uid;
   username_status = $rootScope.username;
-
     $scope.list = function(){
     fbAuth = fb.getAuth();
       if(fbAuth) {
         var timelines = $firebaseObject(fb.child("timeline/todos/" + $rootScope.status_index));
         timelines.$bindTo($scope, "status");
       }
+    }
+
+
+  // show kilometer
+  var position = [];
+  $scope.current_pos = $rootScope.current_pos; 
+
+  // firebase initialization
+  fb = new Firebase("https://fbchat27c.firebaseio.com/");
+  username_status = $rootScope.username;
+  user_pic_url_status = $rootScope.pic_url;
+  var users = fb.child("users");
+
+  // // initialize infinite scroll
+  // $scope.numberOfItemsToDisplay = 5;
+  // // $scope.timelines.todos;
+  // $scope.addMoreItem = function(done) {
+  //   if ($scope.timelines.todos.length > $scope.numberOfItemsToDisplay)
+  //     $scope.numberOfItemsToDisplay += 5; // load 20 more items
+  //   $scope.$broadcast('scroll.infiniteScrollComplete'); // need to call this when finish loading more data
+  // }
+
+  //   // Show kilometer
+  //   function deg2rad(deg) {
+  //     return deg * (Math.PI/180)
+  //   }
+   
+
+  //   $scope.getDistanceFromLatLonInKm = function(lat1,lon1,lat2,lon2) {
+  //   var lat1 = parseFloat(lat1);
+  //   var lon1 = parseFloat(lon1);
+  //   var lat2 = parseFloat(lat2);
+  //   var lon2 = parseFloat(lon2);
+  //   var R = 6371; // Radius of the earth in km
+  //   var dLat = deg2rad(lat2-lat1);  // deg2rad below
+  //   var dLon = deg2rad(lon2-lon1); 
+  //   var a = 
+  //     Math.sin(dLat/2) * Math.sin(dLat/2) +
+  //     Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+  //     Math.sin(dLon/2) * Math.sin(dLon/2)
+  //     ; 
+  //   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  //   var d = R * c; // Distance in km
+  //   return parseFloat(JSON.stringify(d)).toFixed(1);
+  //  }
+
+  //  $scope.like = function(index){
+  //   var index = JSON.stringify(index - 1);
+  //   if($scope.status[index].hasOwnProperty("user_who_likes") !== true) {
+  //       $scope.status[index].user_who_likes = [];
+  //   }
+
+  //   if ($scope.status[index].user_who_likes.indexOf($rootScope.uid) > -1) {
+  //       //In the array!
+  //       $scope.status[index].useful_points -= 1;
+  //       var index_hapus = $scope.status[index].user_who_likes.indexOf($rootScope.uid);
+  //       // Remove the user
+  //       if (index_hapus > -1) {
+  //           $scope.status[index].user_who_likes.splice(index_hapus, 1);
+  //       }
+  //   } else {
+  //       //Not in the array
+  //       $scope.status[index].useful_points += 1;
+  //       $scope.status[index].user_who_likes.push($rootScope.uid);
+  //   }
+  //  }
+
+  //  $scope.give_help = function(index){
+  //   var index = JSON.stringify(index - 1);
+  //   if($scope.status[index].hasOwnProperty("helper") !== true) {
+  //       $scope.status[index].helper = [];
+  //   }
+
+  //   if ($scope.status[index].helper.indexOf($rootScope.uid) > -1) {
+  //       //In the array!
+  //       $scope.status[index].help_points -= 1;
+  //       var index_hapus = $scope.status[index].helper.indexOf($rootScope.uid);
+  //       // Remove the user
+  //       if (index_hapus > -1) {
+  //           $scope.status[index].helper.splice(index_hapus, 1);
+  //       }
+  //   } else {
+  //       //Not in the array
+  //       $scope.status[index].help_points += 1;
+  //       $scope.status[index].helper.push($rootScope.uid);
+  //   }
+  //  }
+
+  //   $scope.toggle = function(index){
+  //     var index = JSON.stringify(index - 1);
+  //     $scope.timelines.todos[index].status = !$scope.timelines.todos[index].status;
+  //   };
+
+  //  $scope.gotolocation = function(index){
+  //   // alert(index);
+  //    var index = JSON.stringify(index - 1);
+  //    $rootScope.single_latitude = $scope.timelines.todos[index].user_latitude;
+  //    $rootScope.single_longitude = $scope.timelines.todos[index].user_longitude;
+  //   $state.go('app.singlemap');
+  //  }
+
+  // $scope.share_status = function(message, sender, image, date) {
+  //   var date = $filter('amCalendar')(date)
+  //   if(image){
+  //     $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\nInfo by: "+ sender + '\n' + date , "", 'data:image/jpeg;base64,' + image , "#Help Me!");
+  //   } else {
+  //     $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\nInfo by: "+ sender + '\n' + date , "", null, "#Help Me!");
+  //   }
+  // }
+
+    $scope.delete_comment = function(index){
+      var index = JSON.stringify(index - 1);
+      $scope.status.comments.splice(index, 1);      
     }
 
     $scope.new_comment = function(){
@@ -588,8 +703,9 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
             if(comment == null){
                return;
             }
-                alert(JSON.stringify($scope.status.comments));
-                $scope.status.comments.push({comments: comment, 
+                user_id = $scope.status.comments.length + 1;
+                $scope.status.comments.push({id: user_id,
+                                        comments: comment, 
                                         date: created_status, 
                                         username: username_status, 
                                         user_pp: user_pic_url_comment,

@@ -153,7 +153,7 @@ helpMe.config(function($stateProvider, $urlRouterProvider){
   })
   
   .state('app.status', {
-    url: '/playlists/:statusId',
+    url: '/status',
     views: {
       'menuContent': {
         templateUrl: 'templates/status.html',

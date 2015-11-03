@@ -21,7 +21,28 @@
       {{status.title}}
     </p>
   </div>
-
+<!--   <div class="item item-body">
+    <a class="tab-item" href="#" ng-click="like(status.id)">
+      <i class="icon ion-thumbsup"></i>
+      Like
+    </a>
+    <a class="tab-item" ng-show="(status.status != true) && (status.username != $root.username)" href="#" ng-click="give_help(status.id)">
+      <i class="icon ion-happy-outline"></i>
+      Give Help
+    </a>
+    <a class="tab-item" ng-show="status.username == $root.username" href="#" ng-click="toggle(status.id)">
+      <i class="icon ion-checkmark-circled"></i>
+      Change status
+    </a>
+    <a class="tab-item" href="#" ng-click="gotolocation(status.id)">
+      <i class="icon ion-map"></i>
+      Map
+    </a>
+    <a class="tab-item" href="#" ng-click="share_status(status.title, status.username, status.user_images, status.date)">
+      <i class="icon ion-share"></i>
+      Share
+    </a>
+  </div> -->
   <div class="item item-body">
     <label class="item item-input">
       <textarea ng-model="txtcomment" placeholder="Your Comments"></textarea>
@@ -33,7 +54,8 @@
           <h2>{{comment.username}}</h2>
           <p><span am-time-ago="{{comment.date}}"></p>
           <p>{{comment.comments}}</p>
-        <ion-option-button class="button-assertive" ng-click="remove(chat)">
+          <i class="icon ion-chevron-right icon-accessory"></i>
+        <ion-option-button class="button-assertive" ng-click="delete_comment(comment.id)">
           Delete
         </ion-option-button>
       </ion-item>
