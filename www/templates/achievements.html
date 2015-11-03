@@ -1,0 +1,11 @@
+<ion-view view-title="Achievement" ng-init="list()"> 
+<!-- <ion-nav-buttons side="right">
+  <button class="button" ng-click="create()">Help Me!</button>
+</ion-nav-buttons> -->
+    <ion-content>
+        <h1>You have : {{user.reputation}} reputation points</h1>
+        <p ng-show="(user.reputation < 5)">You are Newbie</p>
+        <p ng-show="((user.reputation >= 5) && (user.reputation < 10)">You are Addicted</p>
+        <p ng-show="(user.reputation >= 10)">You are Everyday Heroes</p>
+    </ion-content>
+</ion-view>

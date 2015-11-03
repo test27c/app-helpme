@@ -85,21 +85,16 @@ listRef.on('value', function(snap) {
 username_status = $rootScope.username;
 user_pic_url_status = $rootScope.pic_url;
 
-
 // Create users new data in database
 var ref = new Firebase('https://fbchat27c.firebaseio.com');
 var usersRef = ref.child("users");
-usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pic_url_status, reputation: 0});
-
-  // userRef.once("value", function(snapshot) {
-  //   alert('test');
-  //   snapshot.child($rootScope.uid).set({ username: username_status, user_pp: user_pic_url_status });
-  //   if(snapshot.child($rootScope.uid).exists()){
-  //     snapshot.child($rootScope.uid).update({ username: username_status, user_pp: user_pic_url_status });
-  //   } else {
-  //     snapshot.child($rootScope.uid).set({ username: username_status, user_pp: user_pic_url_status });
-  //   }
-  // });
+usersRef.child($rootScope.uid).child('reputation').once('value', function(snapshot) {
+   if (snapshot.val() === null) {
+       usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pic_url_status, reputation: 0});
+    } else {
+      usersRef.child($rootScope.uid).update({ username: username_status, user_pp: user_pic_url_status});
+    }
+});
 
   $scope.logout = function(){
     $ionicActionSheet.show({
@@ -153,10 +148,6 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
             infowindow.open($scope.objMapa);
          };
 
-  // $scope.openMenu = function () {
-  //   $ionicSideMenuDelegate.toggleRight();
-  // };
-
 })
 
 .controller('MapSingleCtrl', function($scope, $rootScope, $ionicPopup) {
@@ -167,8 +158,6 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
 
 
   $scope.panelName = "petunjuk";
-  // $scope.latitude = $rootScope.single_latitude;
-  // $scope.longitude = $rootScope.single_longitude;
   $scope.end = $rootScope.single_latitude + "," + $rootScope.single_longitude;
   $scope.start = $rootScope.current_pos[0] + "," + $rootScope.current_pos[1];
 
@@ -209,11 +198,8 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
   };
 })
 
-////////////////////////////////////////HOME CONTROLLER////////////////////////////////////////////////////////////
-
 .controller('PlaylistsCtrl', function($scope, $cordovaSocialSharing, $filter, $cordovaCamera, $compile, $state, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
 
-  // show kilometer
   var position = [];
   $scope.current_pos = $rootScope.current_pos; 
   user_lat = '';
@@ -221,7 +207,6 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
   user_images = '';
   status_images = '';
 
-  // firebase initialization
   fb = new Firebase("https://fbchat27c.firebaseio.com/");
   username_status = $rootScope.username;
   user_pic_url_status = $rootScope.pic_url;
@@ -248,7 +233,6 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
 
   // initialize infinite scroll
   $scope.numberOfItemsToDisplay = 5;
-  // $scope.timelines.todos;
   $scope.addMoreItem = function(done) {
     if ($scope.timelines.todos.length > $scope.numberOfItemsToDisplay)
       $scope.numberOfItemsToDisplay += 5; // load 20 more items
@@ -521,6 +505,13 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
    }
 
 
+   $scope.gotostatus = function(index){
+    // alert(index);
+     var index = JSON.stringify(index - 1);
+     $rootScope.status_index = index;
+    $state.go('app.status');
+   }
+
   $scope.share_status = function(message, sender, image, date) {
     var date = $filter('amCalendar')(date)
     if(image){
@@ -545,6 +536,17 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
 
 .controller('PanicCtrl', function($scope, $stateParams) {
 
+})
+
+.controller('AchievementCtrl', function($scope,  $firebaseObject) {
+  fb = new Firebase("https://fbchat27c.firebaseio.com/");
+    $scope.list = function(){
+    fbAuth = fb.getAuth();
+      if(fbAuth) {
+        var timelines = $firebaseObject(fb.child("users/" + user_index));
+        timelines.$bindTo($scope, "user");
+      }
+    }
 })
 
 .controller('YourProfileCtrl', function($scope, $firebaseObject ,$rootScope) {
@@ -590,13 +592,7 @@ usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pi
                 $scope.status.comments.push({comments: comment, 
                                         date: created_status, 
                                         username: username_status, 
-                                        user_pp: user_pic_url_comment, 
-                                        // user_latitude: user_lat, 
-                                        // user_longitude: user_long,
-                                        // useful_points: useful_point,
-                                        // user_images: user_image,
-                                        // status: done,
-                                        // help_points: help_point,
+                                        user_pp: user_pic_url_comment,
                                         user_uid : status_uid,
                                       });
     this.txtcomment = "";
