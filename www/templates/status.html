@@ -8,23 +8,43 @@
   <div class="item item-avatar">
     <img src="{{status.user_pp}}">
     <h2>{{status.username}}</h2>
-    <p><span am-time-ago="{{status.date}}"></p>
+    <p>{{status.date | amCalendar}}</p>
     <img class="item-checkbox-img" ng-show="status.status != false" src="img/helped.png">
     <img class="item-checkbox-img" ng-show="status.status != true" src="img/ongoing.png">
-    <!-- <p>{{todo.date | amCalendar }}</p> -->
+    <!-- <p>{{status.date | amCalendar }}</p> -->
   </div>
 
   <div class="item item-body">
+<!--     <div>
+      <ion-slide-box active-slide="0" 
+      on-slide-changed="slideChanged(index)"
+      on-swipe-left="next()"
+      on-swipe-right="previous()">
+      <ion-slide>
+    <img class="full-image" ng-show='status.user_images !== ""' ng-src="data:image/jpeg;base64,{{status.user_images}}">
+    <img class="full-image" ng-show='status.user_images === ""' ng-src="img/FireDisaster.jpg">
+      </ion-slide>
+
+      <ion-slide >
+      <map class="full-image" draggable="false" center="{{status.user_latitude + ',' + status.user_longitude}}" zoom="11" disable-default-u-i="true" style="margin-bottom:-150px;">
+      <marker position="{{status.user_latitude + ',' + status.user_longitude}}"></marker>
+      </map>
+      </ion-slide>
+    </div > -->
     <img class="full-image" ng-show='status.user_images !== ""' ng-src="data:image/jpeg;base64,{{status.user_images}}">
     <img class="full-image" ng-show='status.user_images === ""' ng-src="img/FireDisaster.jpg">
     <p>
       {{status.title}}
     </p>
+    <p>
+      <a href="#" ng-show="status.help_points > 0" class="subdued">{{status.help_points}} person helping right now</a>
+      <a href="#" class="subdued">{{getDistanceFromLatLonInKm($root.current_pos[0], $root.current_pos[1], status.user_latitude, status.user_longitude);}} Km from your location.</a>
+    </p>
   </div>
-<!--   <div class="item item-body">
+  <div class="item tabs tabs-secondary tabs-icon-left">
     <a class="tab-item" href="#" ng-click="like(status.id)">
       <i class="icon ion-thumbsup"></i>
-      Like
+      {{status.useful_points}} Vote
     </a>
     <a class="tab-item" ng-show="(status.status != true) && (status.username != $root.username)" href="#" ng-click="give_help(status.id)">
       <i class="icon ion-happy-outline"></i>
@@ -42,7 +62,7 @@
       <i class="icon ion-share"></i>
       Share
     </a>
-  </div> -->
+  </div>
   <div class="item item-body">
     <label class="item item-input">
       <textarea ng-model="txtcomment" placeholder="Your Comments"></textarea>

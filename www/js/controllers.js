@@ -203,6 +203,47 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
 
 .controller('PlaylistsCtrl', function($scope, $cordovaSocialSharing, $filter, $cordovaCamera, $compile, $state, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
 
+ $scope.indicator='boo';
+  
+  $scope.slideChanged = function(index) {
+    $scope.slideIndex = index;
+  };
+  
+  $scope.toggleLeft = function() {
+    $ionicSideMenuDelegate.toggleLeft();
+  };
+  
+  $scope.swipeRight = function() {
+    $scope.indicator='turned right';
+  };
+  
+  $scope.swipeLeft = function() {
+    $scope.indicator='turned left';
+  };
+  $scope.next = function() {
+    $ionicSlideBoxDelegate.next();
+  };
+  $scope.previous = function() {
+    $ionicSlideBoxDelegate.previous();
+  };
+  
+  $scope.nextCard = function() {
+    $scope.cardContent = "nextCard";
+  };
+  $scope.previousCard = function() {
+    $scope.cardContent = "previousCard";
+  };
+  
+  $scope.letDrag = function() {
+    //$ionicSlideBoxDelegate.start();
+  };
+  
+  $scope.stopDrag = function() {
+    //$ionicSlideBoxDelegate.stop();
+  };
+
+  ///////////////////////////////
+
   var position = [];
   $scope.current_pos = $rootScope.current_pos; 
   user_lat = '';
@@ -381,7 +422,7 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
                 user_lat = $scope.current_pos[0];
                 user_long = $scope.current_pos[1];
                 user_image = status_images;
-                status_uid = $root.uid;
+                status_uid = $rootScope.uid;
                 useful_point = 0;
                 help_point = 0;
                 done = false;
@@ -566,7 +607,7 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
 })
 
 
-.controller('StatusCtrl', function($scope, $firebaseObject ,$ionicPopup, $rootScope) {
+.controller('StatusCtrl', function($scope, $cordovaSocialSharing, $filter, $compile, $state, $firebaseObject ,$rootScope) {
   fb = new Firebase("https://fbchat27c.firebaseio.com/");
   created_status = (Date.now()).toString();
   user_pic_url_comment = $rootScope.pic_url;
@@ -580,6 +621,46 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
       }
     }
 
+// Map slider
+
+  // $scope.indicator='boo';
+  
+  // $scope.slideChanged = function(index) {
+  //   $scope.slideIndex = index;
+  // };
+  
+  // $scope.toggleLeft = function() {
+  //   $ionicSideMenuDelegate.toggleLeft();
+  // };
+  
+  // $scope.swipeRight = function() {
+  //   $scope.indicator='turned right';
+  // };
+  
+  // $scope.swipeLeft = function() {
+  //   $scope.indicator='turned left';
+  // };
+  // $scope.next = function() {
+  //   $ionicSlideBoxDelegate.next();
+  // };
+  // $scope.previous = function() {
+  //   $ionicSlideBoxDelegate.previous();
+  // };
+  
+  // $scope.nextCard = function() {
+  //   $scope.cardContent = "nextCard";
+  // };
+  // $scope.previousCard = function() {
+  //   $scope.cardContent = "previousCard";
+  // };
+  
+  // $scope.letDrag = function() {
+  //  $ionicSlideBoxDelegate.enableSlide(true);
+  // };
+  
+  // $scope.stopDrag = function() {
+  //   $ionicSlideBoxDelegate.enableSlide(false);
+  // };
 
   // show kilometer
   var position = [];
@@ -591,102 +672,97 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
   user_pic_url_status = $rootScope.pic_url;
   var users = fb.child("users");
 
-  // // initialize infinite scroll
-  // $scope.numberOfItemsToDisplay = 5;
-  // // $scope.timelines.todos;
-  // $scope.addMoreItem = function(done) {
-  //   if ($scope.timelines.todos.length > $scope.numberOfItemsToDisplay)
-  //     $scope.numberOfItemsToDisplay += 5; // load 20 more items
-  //   $scope.$broadcast('scroll.infiniteScrollComplete'); // need to call this when finish loading more data
-  // }
+  // initialize infinite scroll
+  $scope.numberOfItemsToDisplay = 5;
+  // $scope.timelines.todos;
+  $scope.addMoreItem = function(done) {
+    if ($scope.timelines.todos.length > $scope.numberOfItemsToDisplay)
+      $scope.numberOfItemsToDisplay += 5; // load 20 more items
+    $scope.$broadcast('scroll.infiniteScrollComplete'); // need to call this when finish loading more data
+  }
 
-  //   // Show kilometer
-  //   function deg2rad(deg) {
-  //     return deg * (Math.PI/180)
-  //   }
+    // Show kilometer
+    function deg2rad(deg) {
+      return deg * (Math.PI/180)
+    }
    
 
-  //   $scope.getDistanceFromLatLonInKm = function(lat1,lon1,lat2,lon2) {
-  //   var lat1 = parseFloat(lat1);
-  //   var lon1 = parseFloat(lon1);
-  //   var lat2 = parseFloat(lat2);
-  //   var lon2 = parseFloat(lon2);
-  //   var R = 6371; // Radius of the earth in km
-  //   var dLat = deg2rad(lat2-lat1);  // deg2rad below
-  //   var dLon = deg2rad(lon2-lon1); 
-  //   var a = 
-  //     Math.sin(dLat/2) * Math.sin(dLat/2) +
-  //     Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-  //     Math.sin(dLon/2) * Math.sin(dLon/2)
-  //     ; 
-  //   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-  //   var d = R * c; // Distance in km
-  //   return parseFloat(JSON.stringify(d)).toFixed(1);
-  //  }
+    $scope.getDistanceFromLatLonInKm = function(lat1,lon1,lat2,lon2) {
+    var lat1 = parseFloat(lat1);
+    var lon1 = parseFloat(lon1);
+    var lat2 = parseFloat(lat2);
+    var lon2 = parseFloat(lon2);
+    var R = 6371; // Radius of the earth in km
+    var dLat = deg2rad(lat2-lat1);  // deg2rad below
+    var dLon = deg2rad(lon2-lon1); 
+    var a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2)
+      ; 
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    var d = R * c; // Distance in km
+    return parseFloat(JSON.stringify(d)).toFixed(1);
+   }
 
-  //  $scope.like = function(index){
-  //   var index = JSON.stringify(index - 1);
-  //   if($scope.status[index].hasOwnProperty("user_who_likes") !== true) {
-  //       $scope.status[index].user_who_likes = [];
-  //   }
+   $scope.like = function(){
+    if($scope.status.hasOwnProperty("user_who_likes") !== true) {
+        $scope.status.user_who_likes = [];
+    }
 
-  //   if ($scope.status[index].user_who_likes.indexOf($rootScope.uid) > -1) {
-  //       //In the array!
-  //       $scope.status[index].useful_points -= 1;
-  //       var index_hapus = $scope.status[index].user_who_likes.indexOf($rootScope.uid);
-  //       // Remove the user
-  //       if (index_hapus > -1) {
-  //           $scope.status[index].user_who_likes.splice(index_hapus, 1);
-  //       }
-  //   } else {
-  //       //Not in the array
-  //       $scope.status[index].useful_points += 1;
-  //       $scope.status[index].user_who_likes.push($rootScope.uid);
-  //   }
-  //  }
+    if ($scope.status.user_who_likes.indexOf($rootScope.uid) > -1) {
+        //In the array!
+        $scope.status.useful_points -= 1;
+        var index_hapus = $scope.status.user_who_likes.indexOf($rootScope.uid);
+        // Remove the user
+        if (index_hapus > -1) {
+            $scope.status.user_who_likes.splice(index_hapus, 1);
+        }
+    } else {
+        //Not in the array
+        $scope.status.useful_points += 1;
+        $scope.status.user_who_likes.push($rootScope.uid);
+    }
+   }
 
-  //  $scope.give_help = function(index){
-  //   var index = JSON.stringify(index - 1);
-  //   if($scope.status[index].hasOwnProperty("helper") !== true) {
-  //       $scope.status[index].helper = [];
-  //   }
+   $scope.give_help = function(){
+    if($scope.status.hasOwnProperty("helper") !== true) {
+        $scope.status.helper = [];
+    }
 
-  //   if ($scope.status[index].helper.indexOf($rootScope.uid) > -1) {
-  //       //In the array!
-  //       $scope.status[index].help_points -= 1;
-  //       var index_hapus = $scope.status[index].helper.indexOf($rootScope.uid);
-  //       // Remove the user
-  //       if (index_hapus > -1) {
-  //           $scope.status[index].helper.splice(index_hapus, 1);
-  //       }
-  //   } else {
-  //       //Not in the array
-  //       $scope.status[index].help_points += 1;
-  //       $scope.status[index].helper.push($rootScope.uid);
-  //   }
-  //  }
+    if ($scope.status.helper.indexOf($rootScope.uid) > -1) {
+        //In the array!
+        $scope.status.help_points -= 1;
+        var index_hapus = $scope.status.helper.indexOf($rootScope.uid);
+        // Remove the user
+        if (index_hapus > -1) {
+            $scope.status.helper.splice(index_hapus, 1);
+        }
+    } else {
+        //Not in the array
+        $scope.status.help_points += 1;
+        $scope.status.helper.push($rootScope.uid);
+    }
+   }
 
-  //   $scope.toggle = function(index){
-  //     var index = JSON.stringify(index - 1);
-  //     $scope.timelines.todos[index].status = !$scope.timelines.todos[index].status;
-  //   };
+    $scope.toggle = function(){
+      $scope.status.status = !$scope.status.status;
+    };
 
-  //  $scope.gotolocation = function(index){
-  //   // alert(index);
-  //    var index = JSON.stringify(index - 1);
-  //    $rootScope.single_latitude = $scope.timelines.todos[index].user_latitude;
-  //    $rootScope.single_longitude = $scope.timelines.todos[index].user_longitude;
-  //   $state.go('app.singlemap');
-  //  }
+   $scope.gotolocation = function(){
+     $rootScope.single_latitude = $scope.status.user_latitude;
+     $rootScope.single_longitude = $scope.status.user_longitude;
+    $state.go('app.singlemap');
+   }
 
-  // $scope.share_status = function(message, sender, image, date) {
-  //   var date = $filter('amCalendar')(date)
-  //   if(image){
-  //     $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\nInfo by: "+ sender + '\n' + date , "", 'data:image/jpeg;base64,' + image , "#Help Me!");
-  //   } else {
-  //     $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\nInfo by: "+ sender + '\n' + date , "", null, "#Help Me!");
-  //   }
-  // }
+  $scope.share_status = function(message, sender, image, date) {
+    var date = $filter('amCalendar')(date)
+    if(image){
+      $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\nInfo by: "+ sender + '\n' + date , "", 'data:image/jpeg;base64,' + image , "#Help Me!");
+    } else {
+      $cordovaSocialSharing.share("Help me, something happened!\n" + message + "\nInfo by: "+ sender + '\n' + date , "", null, "#Help Me!");
+    }
+  }
 
     $scope.delete_comment = function(index){
       var index = JSON.stringify(index - 1);
@@ -699,7 +775,6 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
                   $scope.status.comments = [];
               }
               comment = this.txtcomment;
-              alert(comment);
             if(comment == null){
                return;
             }

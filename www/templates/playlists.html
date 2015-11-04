@@ -10,8 +10,8 @@
     <img src="{{todo.user_pp}}">
     <h2>{{todo.username}}</h2>
     <p><span am-time-ago="{{todo.date}}"></p>
-    <img class="item-checkbox-img" ng-show="todo.status != false" src="img/helped.png">
-    <img class="item-checkbox-img" ng-show="todo.status != true" src="img/ongoing.png">
+    <img class="item-checkbox-img" ng-show="todo.status != false" src="img/helped.png" ng-click="gotolocation(todo.id)">
+    <img class="item-checkbox-img" ng-show="todo.status != true" src="img/ongoing.png" ng-click="gotolocation(todo.id)">
     <!-- <p>{{todo.date | amCalendar }}</p> -->
   </div>
 
@@ -23,7 +23,7 @@
     </p>
     <!-- <p>{{getDistanceFromLatLonInKm($root.current_pos[0], $root.current_pos[1], todo.user_latitude, todo.user_longitude);}} Km from your location.</p> -->
     <p>
-      <a href="#" ng-show="todo.useful_points > 0" class="subdued">{{todo.useful_points}} person found this helpful!</a>
+      <!-- <a href="#" ng-show="todo.useful_points > 0" class="subdued">{{todo.useful_points}} person found this helpful!</a> -->
       <a href="#" ng-show="todo.help_points > 0" class="subdued">{{todo.help_points}} person helping right now</a>
       <a href="#" class="subdued">{{getDistanceFromLatLonInKm($root.current_pos[0], $root.current_pos[1], todo.user_latitude, todo.user_longitude);}} Km from your location.</a>
     </p>
@@ -32,7 +32,7 @@
   <div class="item tabs tabs-secondary tabs-icon-left">
     <a class="tab-item" href="#" ng-click="like(todo.id)">
       <i class="icon ion-thumbsup"></i>
-      Like
+      {{todo.useful_points}} Vote
     </a>
     <a class="tab-item" ng-show="(todo.status != true) && (todo.username != $root.username)" href="#" ng-click="give_help(todo.id)">
       <i class="icon ion-happy-outline"></i>
@@ -46,6 +46,8 @@
       <i class="icon ion-compose"></i>
       {{(todo.comments).length}} Comments
     </a>
+  </div>
+  <div class="item tabs tabs-secondary tabs-icon-left">
     <a class="tab-item" href="#" ng-click="gotolocation(todo.id)">
       <i class="icon ion-map"></i>
       Map

@@ -30,7 +30,7 @@
   <div class="item tabs tabs-secondary tabs-icon-left">
     <a class="tab-item" href="#" ng-click="like(todo.id)">
       <i class="icon ion-thumbsup"></i>
-      Like
+      {{todo.useful_points}} Vote
     </a>
     <a class="tab-item" ng-show="(todo.status != true) && (todo.username != $root.username)" href="#" ng-click="give_help(todo.id)">
       <i class="icon ion-happy-outline"></i>
@@ -44,6 +44,8 @@
       <i class="icon ion-compose"></i>
       {{(todo.comments).length}} Comments
     </a>
+  </div>
+  <div class="item tabs tabs-secondary tabs-icon-left">
     <a class="tab-item" href="#" ng-click="gotolocation(todo.id)">
     <!-- <a class="tab-item" href="#"> -->
       <i class="icon ion-map"></i>
