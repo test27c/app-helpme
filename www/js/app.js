@@ -40,14 +40,15 @@ $ionicPlatform.registerBackButtonAction(function(e) {
 
   $rootScope.current_pos = []; 
   $rootScope.current_static_pos = []; 
+  var options = { enableHighAccuracy: true };
   navigator.geolocation.watchPosition(function (position) {
     $rootScope.$apply(function() {
       $rootScope.current_pos[0] = position.coords.latitude;
       $rootScope.current_pos[1] = position.coords.longitude;
     });
-  }, geolocationError);
+  }, geolocationError, options);
 
-  navigator.geolocation.getCurrentPosition(geolocationSuccess, geolocationError);
+  navigator.geolocation.getCurrentPosition(geolocationSuccess, geolocationError, options);
    function geolocationSuccess(position) {
     $rootScope.current_static_pos[0] = position.coords.latitude;
     $rootScope.current_static_pos[1] = position.coords.longitude;
