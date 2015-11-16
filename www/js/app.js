@@ -39,7 +39,8 @@ $ionicPlatform.registerBackButtonAction(function(e) {
 
 
   $rootScope.current_pos = []; 
-  $rootScope.current_static_pos = []; 
+  $rootScope.current_static_pos = [];
+  
   var options = { enableHighAccuracy: true };
   navigator.geolocation.watchPosition(function (position) {
     $rootScope.$apply(function() {
@@ -58,7 +59,6 @@ $ionicPlatform.registerBackButtonAction(function(e) {
     alert('ERROR(' + err.code + '): ' + err.message);
    }
 
-
       
         if(window.cordova && window.cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
@@ -68,23 +68,23 @@ $ionicPlatform.registerBackButtonAction(function(e) {
         }   
     // Begin the service
     // hard coded 'target'
-    var lat = $rootScope.current_pos[0];
-    var long = $rootScope.current_pos[1];
-    function onConfirm(idx) {
-      alert('button '+idx+' pressed');
-    }
+    // var lat = $rootScope.current_pos[0];
+    // var long = $rootScope.current_pos[1];
+    // function onConfirm(idx) {
+    //   alert('button '+idx+' pressed');
+    // }
     
-    GeoAlert.begin(lat,long, function() {
-      console.log('TARGET');
-      GeoAlert.end();
-      navigator.notification.confirm(
-        'You are near a target!',
-        onConfirm,
-        'Target!',
-        ['Cancel','View']
-      );
+    // GeoAlert.begin(lat,long, function() {
+    //   console.log('TARGET');
+    //   GeoAlert.end();
+    //   navigator.notification.confirm(
+    //     'You are near a target!',
+    //     onConfirm,
+    //     'Target!',
+    //     ['Cancel','View']
+    //   );
       
-    });
+    // });
     
   });
 })
@@ -144,7 +144,7 @@ helpMe.config(function($stateProvider, $urlRouterProvider){
     })
 
   .state('app.singlemap', {
-    url: '/playlists/:mapId',
+    url: '/singlemap',
     views: {
       'menuContent': {
         templateUrl: 'templates/mapsingle.html',

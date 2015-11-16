@@ -153,8 +153,12 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
 
 })
 
-.controller('MapSingleCtrl', function($scope, $rootScope, $ionicPopup) {
-
+.controller('MapSingleCtrl', function($scope, $cordovaSocialSharing, $filter, $compile, $state, $firebaseObject ,$rootScope) {
+  fb = new Firebase("https://fbchat27c.firebaseio.com/");
+  created_status = (Date.now()).toString();
+  user_pic_url_comment = $rootScope.pic_url;
+  status_uid = $rootScope.uid;
+  username_status = $rootScope.username;
   var position = [];
   $scope.current_pos = $rootScope.current_pos;
   $scope.directionpanel = "directionpanel";
@@ -165,29 +169,68 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
   $scope.start = $rootScope.current_pos[0] + "," + $rootScope.current_pos[1];
 
 
-  $scope.clicked = function(){
-  
-   alert(JSON.stringify($scope.start));
-}
+    $scope.list = function(){
+
+    fbAuth = fb.getAuth();
+      if(fbAuth) {
+        var timelines = $firebaseObject(fb.child("timeline/todos/" + $rootScope.status_index));
+        timelines.$bindTo($scope, "status");
+      }
+    }
+        $scope.$watchCollection('current_pos', function () {
+        if ((Math.abs($rootScope.current_pos[0] - $rootScope.single_latitude) <= 0.001) && (Math.abs($rootScope.current_pos[1] - $rootScope.single_longitude) <= 0.001)) {
+          alert('You have arrived at destination!');
+          if($scope.status.helper.indexOf($rootScope.uid) > -1){
+            if($scope.status.hasOwnProperty("user_who_really_help") !== true) {
+                $scope.status.user_who_really_help = [];
+                $scope.status.user_who_really_help.push($rootScope.uid);
+            }
+          }
+        } else {
+            // alert('you not arrived');
+        }
+    });
+
+
+   // $scope.give_help = function(index){
+   //  var index = JSON.stringify(index - 1);
+   //  if($scope.status.todos[index].hasOwnProperty("helper") !== true) {
+   //      $scope.status.todos[index].helper = [];
+   //  }
+
+   //  if ($scope.status.todos[index].helper.indexOf($rootScope.uid) > -1) {
+   //      //In the array!
+   //      $scope.status.todos[index].help_points -= 1;
+   //      var index_hapus = $scope.status.todos[index].helper.indexOf($rootScope.uid);
+   //      // Remove the user
+   //      if (index_hapus > -1) {
+   //          $scope.status.todos[index].helper.splice(index_hapus, 1);
+   //      }
+   //  } else {
+   //      //Not in the array
+   //      $scope.status.todos[index].help_points += 1;
+   //      $scope.status.todos[index].helper.push($rootScope.uid);
+   //  }
+   // }
 
 })
 
-.controller('ChatController',
-           ["$scope", "messageService",
-  function($scope ,  messageService) {
-    $scope.user = "";
-    $scope.text = "";
-    $scope.messages = messageService.getAll();
+// .controller('ChatController',
+//            ["$scope", "messageService",
+//   function($scope ,  messageService) {
+//     $scope.user = "";
+//     $scope.text = "";
+//     $scope.messages = messageService.getAll();
 
-    $scope.addMessage = function() {
-      var user = $scope.user || "anonymous";
-      if ($scope.text != "") {
-        messageService.add({user: user, text: $scope.text});
-      }
+//     $scope.addMessage = function() {
+//       var user = $scope.user || "anonymous";
+//       if ($scope.text != "") {
+//         messageService.add({user: user, text: $scope.text});
+//       }
       
-      $scope.text = "";
-    };
-}])
+//       $scope.text = "";
+//     };
+// }])
 
 .controller('BrowseCtrl', function($scope, $timeout){
   $scope.title = 'List of product';
@@ -202,45 +245,6 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
 })
 
 .controller('PlaylistsCtrl', function($scope, $cordovaSocialSharing, $filter, $cordovaCamera, $compile, $state, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
-
- $scope.indicator='boo';
-  
-  $scope.slideChanged = function(index) {
-    $scope.slideIndex = index;
-  };
-  
-  $scope.toggleLeft = function() {
-    $ionicSideMenuDelegate.toggleLeft();
-  };
-  
-  $scope.swipeRight = function() {
-    $scope.indicator='turned right';
-  };
-  
-  $scope.swipeLeft = function() {
-    $scope.indicator='turned left';
-  };
-  $scope.next = function() {
-    $ionicSlideBoxDelegate.next();
-  };
-  $scope.previous = function() {
-    $ionicSlideBoxDelegate.previous();
-  };
-  
-  $scope.nextCard = function() {
-    $scope.cardContent = "nextCard";
-  };
-  $scope.previousCard = function() {
-    $scope.cardContent = "previousCard";
-  };
-  
-  $scope.letDrag = function() {
-    //$ionicSlideBoxDelegate.start();
-  };
-  
-  $scope.stopDrag = function() {
-    //$ionicSlideBoxDelegate.stop();
-  };
 
   ///////////////////////////////
 
@@ -351,7 +355,18 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
 
     $scope.toggle = function(index){
       var index = JSON.stringify(index - 1);
+      user_who_help = false;
+      alert($scope.user.reputation);
       $scope.timelines.todos[index].status = !$scope.timelines.todos[index].status;
+      if($scope.timelines.todos[index].user_who_really_help.indexOf($rootScope.uid)){
+        user_who_help = true;
+      }
+      if($scope.timelines.todos[index].status && user_who_help){
+        $scope.user.reputation += 1;
+      }
+      if(!$scope.timelines.todos[index].status && !user_who_help){
+        $scope.user.reputation -= 1;
+      }
     };
 
    $scope.comments = function(index){
@@ -364,6 +379,7 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
      var index = JSON.stringify(index - 1);
      $rootScope.single_latitude = $scope.timelines.todos[index].user_latitude;
      $rootScope.single_longitude = $scope.timelines.todos[index].user_longitude;
+     $rootScope.status_index = index;
     $state.go('app.singlemap');
    }
 
@@ -393,6 +409,8 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
       if(fbAuth) {
         var timelines = $firebaseObject(fb.child("timeline/"));
         timelines.$bindTo($scope, "timelines");
+        var timelines = $firebaseObject(fb.child("users/" + $rootScope.uid));
+        timelines.$bindTo($scope, "user");
       }
     }
 
@@ -545,6 +563,7 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
      var index = JSON.stringify(index - 1);
      $rootScope.single_latitude = $scope.timelines.todos[index].user_latitude;
      $rootScope.single_longitude = $scope.timelines.todos[index].user_longitude;
+     $rootScope.status_index = index;
     $state.go('app.singlemap');
    }
 
