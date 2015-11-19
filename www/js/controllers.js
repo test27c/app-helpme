@@ -7,7 +7,7 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
       $ionicLoading.show({template: 'Please Wait...'}); 
         $cordovaOauth.facebook("1654397994837760", ["email"]).then(function(result) {
             Auth.$authWithOAuthToken("facebook", result.access_token).then(function(authData) {
-                alert(JSON.stringify(authData));
+                // alert(JSON.stringify(authData));
                 // alert("User " + authData.uid + " is logged in with " + authData.provider);
                 $rootScope.username = authData.facebook.displayName;
                 $rootScope.first_name = authData.facebook.cachedUserProfile.first_name;
@@ -37,7 +37,7 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
         $ionicLoading.show({template: 'Please Wait...'}); 
         $cordovaOauth.google("991712593344-se4bj4hk83fdhpjj4fc8dr131grqa3if.apps.googleusercontent.com", ["https://www.googleapis.com/auth/urlshortener", "https://www.googleapis.com/auth/userinfo.email"]).then(function(result) {
             Auth.$authWithOAuthToken("google", result.access_token).then(function(authData) {
-                alert(JSON.stringify(authData));
+                // alert(JSON.stringify(authData));
                 $rootScope.username = authData.google.displayName;
                 $rootScope.first_name = authData.google.cachedUserProfile.given_name;
                 $rootScope.last_name = authData.google.cachedUserProfile.family_name;
@@ -180,6 +180,7 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
         $scope.$watchCollection('current_pos', function () {
         if ((Math.abs($rootScope.current_pos[0] - $rootScope.single_latitude) <= 0.001) && (Math.abs($rootScope.current_pos[1] - $rootScope.single_longitude) <= 0.001)) {
           alert('You have arrived at destination!');
+          if($scope.status.help)
           if($scope.status.helper.indexOf($rootScope.uid) > -1){
             if($scope.status.hasOwnProperty("user_who_really_help") !== true) {
                 $scope.status.user_who_really_help = [];
@@ -244,9 +245,7 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
   };
 })
 
-.controller('PlaylistsCtrl', function($scope, $cordovaSocialSharing, $filter, $cordovaCamera, $compile, $state, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
-
-  ///////////////////////////////
+.controller('PlaylistsCtrl', function($scope, $ionicPlatform, $cordovaSocialSharing, $filter, $cordovaCamera, $compile, $state, Auth, $firebaseObject, $firebaseArray ,$ionicPopup, $rootScope) {
 
   var position = [];
   $scope.current_pos = $rootScope.current_pos; 
@@ -355,18 +354,65 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
 
     $scope.toggle = function(index){
       var index = JSON.stringify(index - 1);
+      helper = [];
       user_who_help = false;
-      alert($scope.user.reputation);
-      $scope.timelines.todos[index].status = !$scope.timelines.todos[index].status;
-      if($scope.timelines.todos[index].user_who_really_help.indexOf($rootScope.uid)){
-        user_who_help = true;
+      $scope.$apply();
+      if (confirm('Are you sure change the status? \n(this action can be changed again)')) {
+        // Save it!
+        changestatusandrep();
+      } else{
+        // alert('error happended');
+      }      
+      // alert(JSON.stringify(helper));
+      // alert($scope.users.length);
+      // alert(JSON.stringify($scope.timelines.todos[index]));
+    function changestatusandrep(){
+      if($scope.timelines.todos[index].status === false){
+        $scope.timelines.todos[index].status = true;
       }
-      if($scope.timelines.todos[index].status && user_who_help){
-        $scope.user.reputation += 1;
+      // $scope.timelines.todos[index].status = !$scope.timelines.todos[index].status;
+
+    // add reputation condition to user who created status
+    if($scope.timelines.todos[index].status === true){
+        if($scope.timelines.todos[index].user_who_really_help.indexOf($rootScope.uid)){
+          user_who_help = true;
+        }
+
+        if($scope.timelines.todos[index].status){
+          if(user_who_help){
+            $scope.user.reputation += 1;
+          } else{
+            $scope.user.reputation -= 1;
+          }
+        }
+
+        // Add condition to add reputation to users who help
+        if($scope.timelines.todos[index].helper.length > -1){
+        for(i = 0; i < $scope.timelines.todos[index].helper.length; i++){
+          helper[i] = $scope.timelines.todos[index].helper[i];
+        }
+        // alert(JSON.stringify(helper));
+        for(i = 0; i < $scope.users.length; i++){
+          // alert(JSON.stringify($scope.users[i].$id));
+          // alert(helper[i]);
+          if($scope.users[i].$id == helper[i]){
+            // alert("true");
+            // $scope.users[i].reputation +=1;
+
+            var item = $scope.users.$getRecord(helper[i]);
+            // alert(JSON.stringify(item));
+            item.reputation += 1;
+            $scope.users.$save(item).then(function() {
+              // alert("saved");
+            });
+          } else{
+            // alert("false");
+          }
+        }
       }
-      if(!$scope.timelines.todos[index].status && !user_who_help){
-        $scope.user.reputation -= 1;
-      }
+    }   
+    };
+
     };
 
    $scope.comments = function(index){
@@ -409,8 +455,9 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
       if(fbAuth) {
         var timelines = $firebaseObject(fb.child("timeline/"));
         timelines.$bindTo($scope, "timelines");
-        var timelines = $firebaseObject(fb.child("users/" + $rootScope.uid));
-        timelines.$bindTo($scope, "user");
+        $scope.users = $firebaseArray(fb.child("users"));
+        var user = $firebaseObject(fb.child("users/" + $rootScope.uid));
+        user.$bindTo($scope, "user");
       }
     }
 
@@ -466,21 +513,41 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
     }
 } )
 
-.controller('RequestCtrl', function($scope, $cordovaSocialSharing, $filter, $cordovaCamera, $compile, $state, Auth, $firebaseObject ,$ionicPopup, $rootScope) {
+.controller('RequestCtrl', function($scope, $ionicPlatform, $cordovaSocialSharing, $filter, $cordovaCamera, $compile, $state, Auth, $firebaseObject, $firebaseArray ,$ionicPopup, $rootScope) {
 
-  // show kilometer
   var position = [];
   $scope.current_pos = $rootScope.current_pos; 
+  user_lat = '';
+  user_long = '';
+  user_images = '';
+  status_images = '';
 
-  // firebase initialization
   fb = new Firebase("https://fbchat27c.firebaseio.com/");
   username_status = $rootScope.username;
   user_pic_url_status = $rootScope.pic_url;
   var users = fb.child("users");
 
+  function take_image(){
+    var options = {
+      quality: 75,
+      destinationType: Camera.DestinationType.DATA_URL,
+      sourceType: Camera.PictureSourceType.CAMERA,
+      encodingType: Camera.EncodingType.JPEG,
+      popoverOptions: CameraPopoverOptions,
+      targetWidth: 500,
+      targetHeight: 300,
+      allowEdit: true,
+      correctOrientation:true,
+      saveToPhotoAlbum: false
+    };
+
+    $cordovaCamera.getPicture(options).then(function(imageData){
+      status_images = imageData;
+    });     
+  }
+
   // initialize infinite scroll
   $scope.numberOfItemsToDisplay = 5;
-  // $scope.timelines.todos;
   $scope.addMoreItem = function(done) {
     if ($scope.timelines.todos.length > $scope.numberOfItemsToDisplay)
       $scope.numberOfItemsToDisplay += 5; // load 20 more items
@@ -555,8 +622,71 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
 
     $scope.toggle = function(index){
       var index = JSON.stringify(index - 1);
-      $scope.timelines.todos[index].status = !$scope.timelines.todos[index].status;
+      helper = [];
+      user_who_help = false;
+      $scope.$apply();
+      if (confirm('Are you sure change the status? \n(this action can be changed again)')) {
+        // Save it!
+        changestatusandrep();
+      } else{
+        // alert('error happended');
+      }      
+      // alert(JSON.stringify(helper));
+      // alert($scope.users.length);
+      // alert(JSON.stringify($scope.timelines.todos[index]));
+    function changestatusandrep(){
+      if($scope.timelines.todos[index].status === false){
+        $scope.timelines.todos[index].status = true;
+      }
+      // $scope.timelines.todos[index].status = !$scope.timelines.todos[index].status;
+
+    // add reputation condition to user who created status
+    if($scope.timelines.todos[index].status === true){
+        if($scope.timelines.todos[index].user_who_really_help.indexOf($rootScope.uid)){
+          user_who_help = true;
+        }
+
+        if($scope.timelines.todos[index].status){
+          if(user_who_help){
+            $scope.user.reputation += 1;
+          } else{
+            $scope.user.reputation -= 1;
+          }
+        }
+
+        // Add condition to add reputation to users who help
+        if($scope.timelines.todos[index].helper.length > -1){
+        for(i = 0; i < $scope.timelines.todos[index].helper.length; i++){
+          helper[i] = $scope.timelines.todos[index].helper[i];
+        }
+        // alert(JSON.stringify(helper));
+        for(i = 0; i < $scope.users.length; i++){
+          // alert(JSON.stringify($scope.users[i].$id));
+          // alert(helper[i]);
+          if($scope.users[i].$id == helper[i]){
+            // alert("true");
+            // $scope.users[i].reputation +=1;
+
+            var item = $scope.users.$getRecord(helper[i]);
+            // alert(JSON.stringify(item));
+            item.reputation += 1;
+            $scope.users.$save(item).then(function() {
+              // alert("saved");
+            });
+          } else{
+            // alert("false");
+          }
+        }
+      }
+    }   
     };
+
+    };
+
+   $scope.comments = function(index){
+    var index = JSON.stringify(index - 1);
+    alert(index);
+   }
 
    $scope.gotolocation = function(index){
     // alert(index);
@@ -567,13 +697,13 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
     $state.go('app.singlemap');
    }
 
-
    $scope.gotostatus = function(index){
     // alert(index);
      var index = JSON.stringify(index - 1);
      $rootScope.status_index = index;
     $state.go('app.status');
    }
+
 
   $scope.share_status = function(message, sender, image, date) {
     var date = $filter('amCalendar')(date)
@@ -584,6 +714,7 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
     }
   }
 
+    // Create todo list
     $scope.list = function(){
     username_status = $rootScope.username;
     user_pic_url_status = $rootScope.pic_url;
@@ -592,6 +723,9 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
       if(fbAuth) {
         var timelines = $firebaseObject(fb.child("timeline/"));
         timelines.$bindTo($scope, "timelines");
+        $scope.users = $firebaseArray(fb.child("users"));
+        var user = $firebaseObject(fb.child("users/" + $rootScope.uid));
+        user.$bindTo($scope, "user");
       }
     }
 

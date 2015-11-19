@@ -36,7 +36,7 @@
       <i class="icon ion-happy-outline"></i>
       Give Help
     </a>
-    <a class="tab-item" ng-show="todo.username == $root.username" href="#" ng-click="toggle(todo.id)">
+    <a class="tab-item" ng-show="(todo.username == $root.username) && (todo.status != true)" href="#" ng-click="toggle(todo.id)">
       <i class="icon ion-checkmark-circled"></i>
       Change status
     </a>
