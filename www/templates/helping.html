@@ -1,0 +1,68 @@
+<ion-view view-title="Helping right now" ng-init="list()"> 
+<!-- <ion-nav-buttons side="right">
+  <button class="button" ng-click="create()">Help Me!</button>
+</ion-nav-buttons> -->
+  <ion-content>
+<div ng-show="(todo.helper.indexOf($rootScope.uid) > -1) && (todo.status == false)" ng-repeat="todo in timelines.todos | orderBy:'-date'| limitTo:numberOfItemsToDisplay" class="list card">
+  <div class="item item-avatar">
+    <img src="{{todo.user_pp}}">
+    <h2>{{todo.username}}</h2>
+    <p><span am-time-ago="{{todo.date}}"></p>
+    <img class="item-checkbox-img" ng-show="todo.status != false" src="img/helped.png">
+    <img class="item-checkbox-img" ng-show="todo.status != true" src="img/ongoing.png">
+    <!-- <p>{{todo.date | amCalendar }}</p> -->
+  </div>
+
+  <div class="item item-body">
+    <img class="full-image" ng-show='todo.user_images !== ""' ng-src="data:image/jpeg;base64,{{todo.user_images}}">
+    <img class="full-image" ng-show='todo.user_images === ""' ng-src="img/FireDisaster.jpg">
+    <p>
+      {{todo.title}}
+    </p>
+    <!-- <p>{{getDistanceFromLatLonInKm($root.current_pos[0], $root.current_pos[1], todo.user_latitude, todo.user_longitude);}} Km from your location.</p> -->
+    <p>
+      <a href="#" ng-show="todo.useful_points > 0" class="subdued">{{todo.useful_points}} person found this helpful!</a>
+      <a href="#" ng-show="todo.help_points > 0" class="subdued">{{todo.help_points}} person helping right now</a>
+      <a href="#" class="subdued">{{getDistanceFromLatLonInKm($root.current_pos[0], $root.current_pos[1], todo.user_latitude, todo.user_longitude);}} Km from your location.</a>
+    </p>
+  </div>
+
+  <div class="item tabs tabs-secondary tabs-icon-left">
+    <a class="tab-item" href="#" ng-click="like(todo.id)">
+      <i class="icon ion-thumbsup"></i>
+      {{todo.useful_points}} Vote
+    </a>
+    <a class="tab-item" ng-show="(todo.status != true) && (todo.username != $root.username)" href="#" ng-click="give_help(todo.id)">
+      <i class="icon ion-happy-outline"></i>
+      Give Help
+    </a>
+    <a class="tab-item" ng-show="(todo.username == $root.username) && (todo.status != true)" href="#" ng-click="toggle(todo.id)">
+      <i class="icon ion-checkmark-circled"></i>
+      Change status
+    </a>
+    <a class="tab-item" href="#" ng-click="gotostatus(todo.id)">
+      <i class="icon ion-compose"></i>
+      {{(todo.comments).length}} Comments
+    </a>
+  </div>
+  <div class="item tabs tabs-secondary tabs-icon-left">
+    <a class="tab-item" href="#" ng-click="gotolocation(todo.id)">
+    <!-- <a class="tab-item" href="#"> -->
+      <i class="icon ion-map"></i>
+      Map
+    </a>
+    <a class="tab-item" href="#" ng-click="share_status(todo.title, todo.username)">
+      <i class="icon ion-share"></i>
+      Share
+    </a>
+  </div>
+</div>
+
+  <ion-infinite-scroll
+      on-infinite="addMoreItem()" 
+      icon="ion-loading-c"
+      distance="10%">
+  </ion-infinite-scroll>    
+
+  </ion-content>
+</ion-view>

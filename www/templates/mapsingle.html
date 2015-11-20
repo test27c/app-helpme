@@ -1,6 +1,6 @@
 <ion-view view-title="Map" ng-init="list()">
 <ion-nav-buttons side="right">
-  <button class="button" ng-click="chat()">Chat</button>
+  <button class="button" ng-show="$root.helping_people === true" ng-click="chat()">Chat</button>
 </ion-nav-buttons>
     <ion-content scroll="false" class="top">
         <map center=" $root.current_pos[0], $root.current_pos[1]" zoom="15" disable-default-u-i="true">

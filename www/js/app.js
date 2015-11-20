@@ -40,6 +40,7 @@ $ionicPlatform.registerBackButtonAction(function(e) {
 
   $rootScope.current_pos = []; 
   $rootScope.current_static_pos = [];
+  $rootScope.helping_people = false;
   
   var options = { enableHighAccuracy: true };
   navigator.geolocation.watchPosition(function (position) {
@@ -124,12 +125,12 @@ helpMe.config(function($stateProvider, $urlRouterProvider){
     }
   })
 
-  .state('app.browse', {
-      url: '/browse',
+  .state('app.chat', {
+      url: '/chat',
       views: {
         'menuContent': {
-          templateUrl: 'templates/browse.html',
-          controller: 'BrowseCtrl'
+          templateUrl: 'templates/chat.html',
+          controller: 'ChatCtrl'
         }
       }
     })
@@ -189,6 +190,16 @@ helpMe.config(function($stateProvider, $urlRouterProvider){
       'menuContent': {
         templateUrl: 'templates/request.html',
         controller: 'RequestCtrl'
+      }
+    }
+  })
+
+  .state('app.helping', {
+    url: '/helping',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/helping.html',
+        controller: 'HelpingCtrl'
       }
     }
   })

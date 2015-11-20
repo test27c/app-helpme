@@ -1,0 +1,21 @@
+<ion-view id="userMessagesView" view-title="<i class='icon ion-chatbubble'></i> Helper Chat" ng-init="list()">
+<ion-content>
+  <div class="item item-body">
+    <label class="item item-input">
+      <textarea ng-model="txtcomment" placeholder="Your Comments"></textarea>
+      </label>
+      <button class="button button-block icon-left icon icon ion-android-send button-positive button-outline" ng-click="new_comment()">Post Chat to Group</button>
+    <ion-list>
+      <ion-item class="item-remove-animate item-thumbnail-left item-icon-right" ng-repeat="chats in status.chats | orderBy:'-date'">
+          <img src="{{chats.user_pp}}">
+          <h2>{{chats.username}}</h2>
+          <p><span am-time-ago="{{chats.date}}"></p>
+          <p>{{chats.chats}}</p>
+          <i class="icon ion-chevron-right icon-accessory"></i>
+        <ion-option-button class="button-assertive" ng-click="delete_comment(chats.id)">
+          Delete
+        </ion-option-button>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-view>
