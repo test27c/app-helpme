@@ -10,6 +10,23 @@
           <h3 id="profile-name">{{user.username}}</h3>
           <span id="profile-description">You are the everyday heroes! <br>You have : {{user.reputation}} reputation points</span>
         </div>
+      <ion-list>
+          <ion-item class=" item-text-wrap" ng-show="((user.reputation < 1)">
+            <p>Help the others to unlock achievement :)</p>
+          </ion-item>
+          <ion-item class="item-thumbnail-left item-text-wrap" ng-show="((user.reputation >= 0) && (user.reputation < 5)">
+            <img src="img/bronze_medal.png">
+            <p>{{user.username}} has unlocked the newbie medal!</p>
+          </ion-item>
+          <ion-item class="item-thumbnail-left item-text-wrap" ng-show="((user.reputation >= 5) && (user.reputation < 10)">
+            <img src="img/silver_medal.png">
+            <p>{{user.username}} has unlocked the helper medal!</p>
+          </ion-item>
+          <ion-item class="item-thumbnail-left item-text-wrap" ng-show="(user.reputation >= 10)">
+            <img src="img/gold_medal.png">
+            <p>{{user.username}} has unlocked the everyday heroes medal!</p>
+          </ion-item>
+      </ion-list>
 <!--         <ion-list>
           <ion-item ng-repeat="post in posts">
             <img class="post-profile-image" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/94311/me.png">

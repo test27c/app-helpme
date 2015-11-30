@@ -958,16 +958,16 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
 
 })
 
-.controller('AchievementCtrl', function($scope,  $firebaseObject) {
-  fb = new Firebase("https://fbchat27c.firebaseio.com/");
-    $scope.list = function(){
-    fbAuth = fb.getAuth();
-      if(fbAuth) {
-        var timelines = $firebaseObject(fb.child("users/" + user_index));
-        timelines.$bindTo($scope, "user");
-      }
-    }
-})
+// .controller('AchievementCtrl', function($scope,  $firebaseObject) {
+//   fb = new Firebase("https://fbchat27c.firebaseio.com/");
+//     $scope.list = function(){
+//     fbAuth = fb.getAuth();
+//       if(fbAuth) {
+//         var timelines = $firebaseObject(fb.child("users/" + user_index));
+//         timelines.$bindTo($scope, "user");
+//       }
+//     }
+// })
 
 .controller('YourProfileCtrl', function($scope, $firebaseObject ,$rootScope) {
   fb = new Firebase("https://fbchat27c.firebaseio.com/");

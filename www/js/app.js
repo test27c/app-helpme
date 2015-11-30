@@ -174,15 +174,16 @@ helpMe.config(function($stateProvider, $urlRouterProvider){
     }
   })
   
-  .state('app.achievement', {
-    url: '/achievement',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/achievements.html',
-        controller: 'AchievementCtrl'
-      }
-    }
-  })
+  // Comented achievement page
+  // .state('app.achievement', {
+  //   url: '/achievement',
+  //   views: {
+  //     'menuContent': {
+  //       templateUrl: 'templates/achievements.html',
+  //       controller: 'AchievementCtrl'
+  //     }
+  //   }
+  // })
 
   .state('app.request', {
     url: '/request',
