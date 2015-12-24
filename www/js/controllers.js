@@ -285,6 +285,26 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
   user_pic_url_status = $rootScope.pic_url;
   var users = fb.child("users");
 
+  function take_image(){
+    var options = {
+      quality: 75,
+      destinationType: Camera.DestinationType.DATA_URL,
+      sourceType: Camera.PictureSourceType.CAMERA,
+      encodingType: Camera.EncodingType.JPEG,
+      popoverOptions: CameraPopoverOptions,
+      targetWidth: 500,
+      targetHeight: 300,
+      allowEdit: true,
+      correctOrientation:true,
+      saveToPhotoAlbum: false
+    };
+
+    $cordovaCamera.getPicture(options).then(function(imageData){
+      status_images = imageData;
+    });     
+  }
+
+
   // initialize infinite scroll
   $scope.numberOfItemsToDisplay = 5;
   $scope.addMoreItem = function(done) {
