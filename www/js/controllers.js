@@ -148,6 +148,7 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
 
             infowindow.setPosition(center);
             infowindow.open($scope.objMapa);
+            alert($rootScope.status_index);
 
          };
 
@@ -452,6 +453,8 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
      var index = JSON.stringify(index - 1);
         if($scope.timelines.todos[index].helper.indexOf($rootScope.uid) > -1){
           $rootScope.helping_people = true;
+        } else {
+
         }
         if($scope.timelines.todos[index].user_uid  == $rootScope.uid){
           $rootScope.helping_people = true;
@@ -483,6 +486,7 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
     $scope.list = function(){
     username_status = $rootScope.username;
     user_pic_url_status = $rootScope.pic_url;
+    severe = '';
 
     fbAuth = fb.getAuth();
       if(fbAuth) {
@@ -501,7 +505,31 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
         take_image();
     } else{
       // alert('error happended');
-    }      
+    }
+    $ionicPopup.show({
+        title: 'Severity about accident',
+        buttons: [
+          { text: 'Simple<br>',
+          type: 'button-positive',
+            onTap: function(e){
+              severe = "Simple";
+            }
+          },
+          { text: 'Not too urgent<br>',
+          type: 'button-energized',
+            onTap: function(e){
+              severe = "Not too urgent";
+            }
+          },
+          { text: 'Urgent<br>',
+            type: 'button-assertive',
+            onTap: function(e){
+              severe = "Urgent";
+            }
+          }
+        ]
+      }).then(function() {      
+    alert(severe);
         $ionicPopup.prompt({
             title: 'Enter new situation',
             inputType: 'text'
@@ -521,6 +549,7 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
                 user_long = $scope.current_pos[1];
                 user_image = status_images;
                 status_uid = $rootScope.uid;
+                user_severity = severe;
                 useful_point = 0;
                 help_point = 0;
                 done = false;
@@ -536,6 +565,7 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
                                         useful_points: useful_point,
                                         user_images: user_image,
                                         status: done,
+                                        severity: user_severity,
                                         help_points: help_point,
                                         user_uid : status_uid,
                                       });
@@ -543,6 +573,7 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
                 alert("Action not completed");
             }
         });
+    });
     }
 } )
 
@@ -1099,15 +1130,20 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
     };
 
    $scope.gotolocation = function(index){
+    alert($scope.status.helper.indexOf($rootScope.uid));
         if($scope.status.helper.indexOf($rootScope.uid) > -1){
           $rootScope.helping_people = true;
+        } else {
+
         }
         if($scope.status.user_uid  === $rootScope.uid){
           $rootScope.helping_people = true;
         }
      $rootScope.single_latitude = $scope.status.user_latitude;
      $rootScope.single_longitude = $scope.status.user_longitude;
-     $rootScope.status_index = index;
+     if(!$rootScope.status_index){
+      $rootScope.status_index = index;
+    }
     $state.go('app.singlemap');
    }
 
