@@ -245,8 +245,8 @@ function getBase64FromImageUrl(url) {
 
     img.onload = function () {
         var canvas = document.createElement("canvas");
-        canvas.width =this.width;
-        canvas.height =this.height;
+        canvas.width =this.width / 2;
+        canvas.height =this.height / 2;
 
         var ctx = canvas.getContext("2d");
         ctx.drawImage(this, 0, 0);
@@ -284,7 +284,7 @@ function getBase64FromImageUrl(url) {
                       $timeout.cancel(yourTimer);
                       alert("stream finish");
                   }
-                }, 1000);
+                }, 5000);
             };
             if($scope.status_uid === $rootScope.uid){
                 $scope.livestream = true;
