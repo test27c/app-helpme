@@ -1,6 +1,13 @@
 <ion-view id="userMessagesView" view-title="<i class='icon ion-chatbubble'></i> Helper Chat" ng-init="list()">
+<ion-nav-buttons  side="right">
+  <button class="button" ng-click="start_livestream()">Start livestream!</button>
+</ion-nav-buttons>
+<ion-nav-buttons  side="left">
+  <button class="button" ng-click="stop_livestream()">Stop livestream!</button>
+</ion-nav-buttons>
 <ion-content>
   <div class="item item-body">
+  <img class="full-image" ng-src="data:image/jpeg;base64,{{status.liveimage}}">
     <label class="item item-input">
       <textarea ng-model="txtcomment" placeholder="Your Comments"></textarea>
       </label>

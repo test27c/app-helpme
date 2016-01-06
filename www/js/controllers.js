@@ -220,19 +220,106 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
 
 })
 
-.controller('ChatCtrl', function($scope, $cordovaSocialSharing, $filter, $compile, $state, $firebaseObject ,$rootScope){
+.controller('ChatCtrl', function($scope, $cordovaSocialSharing, $filter, $compile, $state, $firebaseObject, $http, $timeout ,$rootScope){
   fb = new Firebase("https://fbchat27c.firebaseio.com/");
   created_status = (Date.now()).toString();
   user_pic_url_comment = $rootScope.pic_url;
   status_uid = $rootScope.uid;
   username_status = $rootScope.username;
+  $scope.livestream = false;
 
-    $scope.list = function(){
+$scope.$on('$destroy', function(){
+    $timeout.cancel(yourTimer);
+});
+
     fbAuth = fb.getAuth();
       if(fbAuth) {
         var timelines = $firebaseObject(fb.child("timeline/todos/" + $rootScope.status_index));
         timelines.$bindTo($scope, "status");
       }
+
+function getBase64FromImageUrl(url) {
+    var img = new Image();
+
+    img.setAttribute('crossOrigin', 'anonymous');
+
+    img.onload = function () {
+        var canvas = document.createElement("canvas");
+        canvas.width =this.width;
+        canvas.height =this.height;
+
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(this, 0, 0);
+
+        var dataURL = canvas.toDataURL("image/png");
+
+        $scope.status.liveimage = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+    };
+
+    img.src = url;
+}
+
+    $scope.list = function(){ 
+
+            $scope.imageURL = 'http://localhost:8080/live.jpg?_ts=' + new Date().getTime(); 
+
+            $scope.getImage = function () {
+                $http.get($scope.imageURL, {
+                    cache: false
+                }).success(function (data, status, headers, config) {
+                    $scope.imageURL = 'http://localhost:8080/live.jpg?_ts=' + new Date().getTime();
+                });
+            };
+
+            $scope.intervalFunction = function () {
+                yourTimer = $timeout(function () {
+                  if($scope.livestream){
+                      $scope.getImage();
+                      $scope.intervalFunction();
+                      // convert localhost to url
+                      getBase64FromImageUrl($scope.imageURL);
+                      timeout.cancel(yourTimer);
+                      alert("stream finish");
+                  } else {
+                      $timeout.cancel(yourTimer);
+                      alert("stream finish");
+                  }
+                }, 1000);
+            };
+            if($scope.status_uid === $rootScope.uid){
+                $scope.livestream = true;
+              // $scope.intervalFunction();
+            } else {
+
+            }
+
+            $scope.start_livestream = function(){
+              $scope.livestream = true;
+                $scope.intervalFunction();
+            }
+
+            $scope.stop_livestream = function(){
+              $scope.livestream = false;
+                $timeout.cancel(yourTimer);
+                alert("stream finish");
+            }
+
+
+    // cordova.plugins.CameraServer.startCamera(function(){
+    //       alert('Capture Started');
+    //   },function( error ){
+    //       alert('CameraServer StartCapture failed: ' + error);
+    //   });      
+
+    // var localImg = 'http://localhost:8080/live.jpg';
+
+    // $http.get(localImg).
+    //     success(function(data, status, headers, config) {
+    //         alert("Image Downloaded");
+    //     }).
+    //     error(function(data, status, headers, config) {
+    //         alert("Image Download failed");
+    //     });
     }
 
   // initialize infinite scroll
@@ -458,6 +545,8 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
         }
         if($scope.timelines.todos[index].user_uid  == $rootScope.uid){
           $rootScope.helping_people = true;
+        } else {
+
         }
      $rootScope.single_latitude = $scope.timelines.todos[index].user_latitude;
      $rootScope.single_longitude = $scope.timelines.todos[index].user_longitude;
@@ -508,6 +597,7 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
     }
     $ionicPopup.show({
         title: 'Severity about accident',
+        cssClass: "popup-vertical-buttons",
         buttons: [
           { text: 'Simple<br>',
           type: 'button-positive',
