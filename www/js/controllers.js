@@ -84,15 +84,23 @@ listRef.on('value', function(snap) {
 
 username_status = $rootScope.username;
 user_pic_url_status = $rootScope.pic_url;
-
+$scope.current_pos = $rootScope.current_pos;
+user_lat = $scope.current_pos[0].toString();
+user_long = $scope.current_pos[1].toString();
 // Create users new data in database
 var ref = new Firebase('https://fbchat27c.firebaseio.com');
 var usersRef = ref.child("users");
 usersRef.child($rootScope.uid).child('reputation').once('value', function(snapshot) {
    if (snapshot.val() === null) {
-       usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pic_url_status, reputation: 0});
+    $scope.$apply();
+    user_lat = $scope.current_pos[0].toString();
+    user_long = $scope.current_pos[1].toString();
+    usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pic_url_status, user_latitude: user_lat, user_longitude: user_long, reputation: 0});
     } else {
-      usersRef.child($rootScope.uid).update({ username: username_status, user_pp: user_pic_url_status});
+      $scope.$apply();
+      user_lat = $scope.current_pos[0].toString();
+      user_long = $scope.current_pos[1].toString();
+      usersRef.child($rootScope.uid).update({ username: username_status, user_latitude: user_lat, user_longitude: user_long, user_pp: user_pic_url_status}); 
     }
 });
 
@@ -536,17 +544,21 @@ function getBase64FromImageUrl(url) {
    }
 
    $scope.gotolocation = function(index){
+    //  var index = JSON.stringify(index - 1);
     // alert(index);
-     var index = JSON.stringify(index - 1);
+    var index = JSON.stringify(index - 1);
+    if($scope.timelines.todos[index].hasOwnProperty("helper") !== true) {
+        $scope.timelines.todos[index].helper = [];
+    }
         if($scope.timelines.todos[index].helper.indexOf($rootScope.uid) > -1){
           $rootScope.helping_people = true;
         } else {
-
+           $rootScope.helping_people = false;
         }
         if($scope.timelines.todos[index].user_uid  == $rootScope.uid){
           $rootScope.helping_people = true;
         } else {
-
+           $rootScope.helping_people = false;
         }
      $rootScope.single_latitude = $scope.timelines.todos[index].user_latitude;
      $rootScope.single_longitude = $scope.timelines.todos[index].user_longitude;
@@ -824,13 +836,21 @@ function getBase64FromImageUrl(url) {
    }
 
    $scope.gotolocation = function(index){
+    //  var index = JSON.stringify(index - 1);
     // alert(index);
-     var index = JSON.stringify(index - 1);
+    var index = JSON.stringify(index - 1);
+    if($scope.timelines.todos[index].hasOwnProperty("helper") !== true) {
+        $scope.timelines.todos[index].helper = [];
+    }
         if($scope.timelines.todos[index].helper.indexOf($rootScope.uid) > -1){
           $rootScope.helping_people = true;
+        } else {
+           $rootScope.helping_people = false;
         }
         if($scope.timelines.todos[index].user_uid  == $rootScope.uid){
           $rootScope.helping_people = true;
+        } else {
+           $rootScope.helping_people = false;
         }
      $rootScope.single_latitude = $scope.timelines.todos[index].user_latitude;
      $rootScope.single_longitude = $scope.timelines.todos[index].user_longitude;
@@ -1047,13 +1067,21 @@ function getBase64FromImageUrl(url) {
    }
 
    $scope.gotolocation = function(index){
+    //  var index = JSON.stringify(index - 1);
     // alert(index);
-     var index = JSON.stringify(index - 1);
+    var index = JSON.stringify(index - 1);
+    if($scope.timelines.todos[index].hasOwnProperty("helper") !== true) {
+        $scope.timelines.todos[index].helper = [];
+    }
         if($scope.timelines.todos[index].helper.indexOf($rootScope.uid) > -1){
           $rootScope.helping_people = true;
+        } else {
+           $rootScope.helping_people = false;
         }
         if($scope.timelines.todos[index].user_uid  == $rootScope.uid){
           $rootScope.helping_people = true;
+        } else {
+           $rootScope.helping_people = false;
         }
      $rootScope.single_latitude = $scope.timelines.todos[index].user_latitude;
      $rootScope.single_longitude = $scope.timelines.todos[index].user_longitude;
@@ -1110,17 +1138,71 @@ function getBase64FromImageUrl(url) {
 //     }
 // })
 
-.controller('YourProfileCtrl', function($scope, $firebaseObject ,$rootScope) {
+.controller('YourProfileCtrl', function($scope,$ionicPopup, $firebaseObject ,$rootScope) {
   fb = new Firebase("https://fbchat27c.firebaseio.com/");
+  var ref = new Firebase('https://fbchat27c.firebaseio.com/');
+  var temp_rep = 0;
+  var temp_username = $rootScope.username;
+  var temp_user_pp = $rootScope.pic_url;
+  $scope.current_pos = $rootScope.current_pos;
+  user_lat = $scope.current_pos[0];
+  user_long = $scope.current_pos[1];
+
     $scope.list = function(){
     user_index = $rootScope.uid;
     fbAuth = fb.getAuth();
       if(fbAuth) {
         var timelines = $firebaseObject(fb.child("users/" + user_index));
+        var usersRef = ref.child("users/" + user_index);
         timelines.$bindTo($scope, "user");
       }
     }
 
+    $scope.reg_number = function(){
+        $ionicPopup.prompt({
+            title: 'Please Enter your number',
+            inputType: 'text'
+        })
+        .then(function(result) {
+            if(result !== "") {
+                if($scope.user.hasOwnProperty("phone_number") !== true) {
+                  $scope.$apply();
+                    $scope.user.phone_number = '';
+                    temp_rep = $scope.user.reputation;
+                      user_lat = $scope.current_pos[0];
+                      alert(user_lat);
+                      user_long = $scope.current_pos[1];
+
+
+                }
+
+            if(result == null){
+               return;
+            }
+
+              alert("dunno why");
+              alert(temp_username);
+              alert(temp_user_pp);
+              alert(temp_rep);
+              alert(result);
+              alert(user_long);
+              alert(user_lat);
+              if(!$scope.user.phone_number){
+                $scope.$apply();
+                user_lat = $scope.current_pos[0].toString();
+                user_long = $scope.current_pos[1].toString();
+                $scope.user.set({ username: temp_username, user_pp: temp_user_pp, reputation: temp_rep, user_latitude: user_lat, user_longitude: user_long, phone_number: result});
+              } else {
+                $scope.$apply();
+                user_lat = $scope.current_pos[0].toString();
+                user_long = $scope.current_pos[1].toString();
+                $scope.user.update({ username: temp_username, user_pp: temp_user_pp, reputation: temp_rep, user_latitude: user_lat, user_longitude: user_long, phone_number: result});
+              }
+                } else {
+                alert("Action not completed");
+            }        
+        });
+    }
 })
 
 
@@ -1220,20 +1302,25 @@ function getBase64FromImageUrl(url) {
     };
 
    $scope.gotolocation = function(index){
-    alert($scope.status.helper.indexOf($rootScope.uid));
-        if($scope.status.helper.indexOf($rootScope.uid) > -1){
+    //  var index = JSON.stringify(index - 1);
+    // alert(index);
+    var index = JSON.stringify(index - 1);
+    if($scope.timelines.todos[index].hasOwnProperty("helper") !== true) {
+        $scope.timelines.todos[index].helper = [];
+    }
+        if($scope.timelines.todos[index].helper.indexOf($rootScope.uid) > -1){
           $rootScope.helping_people = true;
         } else {
-
+           $rootScope.helping_people = false;
         }
-        if($scope.status.user_uid  === $rootScope.uid){
+        if($scope.timelines.todos[index].user_uid  == $rootScope.uid){
           $rootScope.helping_people = true;
+        } else {
+           $rootScope.helping_people = false;
         }
-     $rootScope.single_latitude = $scope.status.user_latitude;
-     $rootScope.single_longitude = $scope.status.user_longitude;
-     if(!$rootScope.status_index){
-      $rootScope.status_index = index;
-    }
+     $rootScope.single_latitude = $scope.timelines.todos[index].user_latitude;
+     $rootScope.single_longitude = $scope.timelines.todos[index].user_longitude;
+     $rootScope.status_index = index;
     $state.go('app.singlemap');
    }
 
