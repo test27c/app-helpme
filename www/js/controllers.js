@@ -83,6 +83,7 @@ listRef.on('value', function(snap) {
 });
 
 username_status = $rootScope.username;
+temp_num_phone = "";
 user_pic_url_status = $rootScope.pic_url;
 $scope.current_pos = $rootScope.current_pos;
 user_lat = $scope.current_pos[0].toString();
@@ -95,12 +96,12 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
     $scope.$apply();
     user_lat = $scope.current_pos[0].toString();
     user_long = $scope.current_pos[1].toString();
-    usersRef.child($rootScope.uid).set({ username: username_status, user_pp: user_pic_url_status, user_latitude: user_lat, user_longitude: user_long, reputation: 0});
+    usersRef.child($rootScope.uid).set({ username: username_status, phone_number: temp_num_phone, user_pp: user_pic_url_status, user_latitude: user_lat, user_longitude: user_long, reputation: 0});
     } else {
       $scope.$apply();
       user_lat = $scope.current_pos[0].toString();
       user_long = $scope.current_pos[1].toString();
-      usersRef.child($rootScope.uid).update({ username: username_status, user_latitude: user_lat, user_longitude: user_long, user_pp: user_pic_url_status}); 
+      usersRef.child($rootScope.uid).update({ username: username_status, phone_number: temp_num_phone, user_latitude: user_lat, user_longitude: user_long, user_pp: user_pic_url_status}); 
     }
 });
 
@@ -593,10 +594,58 @@ function getBase64FromImageUrl(url) {
       if(fbAuth) {
         var timelines = $firebaseObject(fb.child("timeline/"));
         timelines.$bindTo($scope, "timelines");
+        var notif = $firebaseObject(fb.child("users/"));
+        notif.$bindTo($scope, "notif");
         $scope.users = $firebaseArray(fb.child("users"));
         var user = $firebaseObject(fb.child("users/" + $rootScope.uid));
         user.$bindTo($scope, "user");
+        // alert(JSON.stringify($scope.notif));
+        // alert(JSON.stringify($scope.notif[1]));
       }
+    }
+
+    var chunks = function(array, size) {
+      var results = [];
+      while (array.length) {
+        results.push(array.splice(0, size));
+      }
+      return results;
+    };
+
+    $scope.get_data = function(){
+        var temp_data = [];
+        var chunk_data = [];
+        for(i = 0; i < $scope.users.length; i++){
+           for (var prop in $scope.users[i]) {
+            if(prop === "phone_number" || prop === "user_latitude" || "user_longitude"){
+              temp_data.push(prop + " = " + $scope.users[i][prop]);     
+              }
+            }
+        }
+        var keywords = ["phone_number", "user_latitude", "user_longitude"];
+        var filtered = [];
+
+        for(var i = 0; i < temp_data.length; i++) {
+            for(var j = 0; j < keywords.length; j++) {
+                if (temp_data[i].indexOf(keywords[j]) > -1) {
+                    filtered.push(temp_data[i]);
+                    break;
+                }
+            }
+        }
+
+              i = 0,
+              n = filtered.length;
+
+          while (i < n) {
+            chunk_data.push(filtered.slice(i, i += 3));
+          }
+
+
+        alert(filtered.length);
+        alert(filtered);
+        alert(chunk_data);
+        alert(JSON.stringify(chunk_data));
     }
 
     $scope.create = function() {
