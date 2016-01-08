@@ -11,6 +11,7 @@
   <allow-navigation href="*"/>
   <access origin="*"/>
   <access origin="tel:*" launch-external="yes"/>
+  <access origin="sms:*" launch-external="yes"/>
   <preference name="orientation" value="portrait" />
   <preference name="webviewbounce" value="false"/>
   <preference name="UIWebViewBounce" value="false"/>

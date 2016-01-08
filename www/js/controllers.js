@@ -367,7 +367,7 @@ function getBase64FromImageUrl(url) {
     }
 })
 
-.controller('PlaylistsCtrl', function($scope, $ionicPlatform, $cordovaSocialSharing, $filter, $cordovaCamera, $compile, $state, Auth, $firebaseObject, $firebaseArray ,$ionicPopup, $rootScope) {
+.controller('PlaylistsCtrl', function($scope, $ionicPlatform, $cordovaSms, $cordovaSocialSharing, $filter, $cordovaCamera, $compile, $state, Auth, $firebaseObject, $firebaseArray ,$ionicPopup, $rootScope) {
 
   var position = [];
   $scope.current_pos = $rootScope.current_pos; 
@@ -588,6 +588,8 @@ function getBase64FromImageUrl(url) {
     $scope.list = function(){
     username_status = $rootScope.username;
     user_pic_url_status = $rootScope.pic_url;
+          temp_user_lat = $rootScope.current_pos[0];
+      temp_user_long = $rootScope.current_pos[1];
     severe = '';
 
     fbAuth = fb.getAuth();
@@ -612,9 +614,38 @@ function getBase64FromImageUrl(url) {
       return results;
     };
 
+
     $scope.get_data = function(){
+      // alert(user_lat);
+      // alert(user_long);
         var temp_data = [];
         var chunk_data = [];
+
+   //  // Show kilometer
+   //  function deg2rad(deg) {
+   //    return deg * (Math.PI/180)
+   //  }
+   
+
+   //  function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+   //  var lat1 = parseFloat(lat1);
+   //  var lon1 = parseFloat(lon1);
+   //  var lat2 = parseFloat(lat2);
+   //  var lon2 = parseFloat(lon2);
+   //  var R = 6371; // Radius of the earth in km
+   //  var dLat = deg2rad(lat2-lat1);  // deg2rad below
+   //  var dLon = deg2rad(lon2-lon1); 
+   //  var a = 
+   //    Math.sin(dLat/2) * Math.sin(dLat/2) +
+   //    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+   //    Math.sin(dLon/2) * Math.sin(dLon/2)
+   //    ; 
+   //  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+   //  var d = R * c; // Distance in km
+   //  return parseFloat(JSON.stringify(d)).toFixed(1);
+   // }
+
+
         for(i = 0; i < $scope.users.length; i++){
            for (var prop in $scope.users[i]) {
             if(prop === "phone_number" || prop === "user_latitude" || "user_longitude"){
@@ -641,11 +672,52 @@ function getBase64FromImageUrl(url) {
             chunk_data.push(filtered.slice(i, i += 3));
           }
 
+          alert(JSON.stringify(chunk_data));
+          for(i = 0; i < chunk_data.length; i++){
+            user_lat = $scope.current_pos[0];
+            user_long = $scope.current_pos[1];
+            // alert(user_lat);
+            alert(chunk_data[i].length);
+            var spliter1 = chunk_data[i][1].split(" ");
+            alert(spliter1[2]);
+            var spliter2 = chunk_data[i][2].split(" ");
+            alert(spliter2[2]);
+            var spliter3 = chunk_data[i][3].split(" ");
+            alert(spliter3[2]);
+            alert(user_lat);
+            alert(user_long);
 
-        alert(filtered.length);
-        alert(filtered);
-        alert(chunk_data);
-        alert(JSON.stringify(chunk_data));
+            var lat1 = parseFloat(user_lat);
+            var lon1 = parseFloat(user_long);
+            var lat2 = parseFloat(spliter2[2]);
+            var lon2 = parseFloat(spliter3[2]);
+            alert(user_lat);
+            alert(lat1);
+            var R = 6371; // Radius of the earth in km
+            var dLat = ((lat2-lat1)* (Math.PI/180)); 
+            var dLon = ((lon2-lon1)* (Math.PI/180));
+            var a = 
+              Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+              Math.sin(dLon/2) * Math.sin(dLon/2)
+              ; 
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+            var d = R * c; // Distance in km
+            var e =  parseFloat(JSON.stringify(d)).toFixed(1);
+            alert(e);
+            // alert(JSON.stringify(chunk_data[i]));
+            // alert(JSON.stringify(chunk_data[i][1]));
+          }
+          // access multiple numbers in a string like: '0612345678,0687654321'
+          // $cordovaSocialSharing
+          // .shareViaSMS("Help Me, something happen in here!", "0878097411099")
+          // .then(function(result) {
+          //   // Success!
+          // }, function(err) {
+          //   // An error occurred. Show a message to the user
+          // });
+
+
     }
 
     $scope.create = function() {
