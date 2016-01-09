@@ -3,9 +3,7 @@
   <button class="button" ng-click="create()">Help Me!</button>
 </ion-nav-buttons>
   <ion-content>
-<p>{{notif}}</p>
-      <button class="button button-block button-outline button-positive" ng-click="get_data()">Check the notify</button>
-      <!-- <button class="button button-block button-outline button-positive" ng-click="sendSMS()">Send SMS</button> -->
+      <!-- <button class="button button-block button-outline button-positive" ng-click="test_function()">Check the notify</button> -->
 <div ng-repeat="todo in timelines.todos | orderBy:'-date'| limitTo:numberOfItemsToDisplay" class="list card">
   <div class="item item-avatar">
     <img src="{{todo.user_pp}}">

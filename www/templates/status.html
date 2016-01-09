@@ -37,6 +37,9 @@
       {{status.title}}
     </p>
     <p>
+      <b>{{status.severity}}</b>
+    </p>
+    <p>
       <a href="#" ng-show="status.help_points > 0" class="subdued">{{status.help_points}} person helping right now</a>
       <a href="#" class="subdued">{{getDistanceFromLatLonInKm($root.current_pos[0], $root.current_pos[1], status.user_latitude, status.user_longitude);}} Km from your location.</a>
     </p>
@@ -50,7 +53,7 @@
       <i class="icon ion-happy-outline"></i>
       Give Help
     </a>
-    <a class="tab-item" ng-show="status.username == $root.username" href="#" ng-click="toggle(status.id)">
+    <a class="tab-item" ng-show="(status.username == $root.username) && (status.status != true)" href="#" ng-click="toggle(todo.id)">
       <i class="icon ion-checkmark-circled"></i>
       Change status
     </a>

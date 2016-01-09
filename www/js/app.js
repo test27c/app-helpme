@@ -87,36 +87,36 @@ $ionicPlatform.registerBackButtonAction(function(e) {
       
     // });
   // start camera server
-  cordova.plugins.CameraServer.startServer({
-      'www_root' : '/',
-      'port' : 8080,
-      'localhost_only' : false,
-      'json_info': []
-  }, function( url ){
-      // if server is up, it will return the url of http://<server ip>:port/
-      // the ip is the active network connection
-      // if no wifi or no cell, "127.0.0.1" will be returned.
-      alert('CameraServer Started @ ' + url); 
-  }, function( error ){
-      alert('CameraServer Start failed: ' + error);
-  });
+  // cordova.plugins.CameraServer.startServer({
+  //     'www_root' : '/',
+  //     'port' : 8080,
+  //     'localhost_only' : false,
+  //     'json_info': []
+  // }, function( url ){
+  //     // if server is up, it will return the url of http://<server ip>:port/
+  //     // the ip is the active network connection
+  //     // if no wifi or no cell, "127.0.0.1" will be returned.
+  //     alert('CameraServer Started @ ' + url); 
+  // }, function( error ){
+  //     alert('CameraServer Start failed: ' + error);
+  // });
 
-    cordova.plugins.CameraServer.startCamera(function(){
-          alert('Capture Started');
-      },function( error ){
-          alert('CameraServer StartCapture failed: ' + error);
-      });      
+  //   cordova.plugins.CameraServer.startCamera(function(){
+  //         alert('Capture Started');
+  //     },function( error ){
+  //         alert('CameraServer StartCapture failed: ' + error);
+  //     });      
 
-    var localImg = 'http://localhost:8080/live.jpg';
+  //   var localImg = 'http://localhost:8080/live.jpg';
 
-    $http.get(localImg).
-        success(function(data, status, headers, config) {
-            alert("Image Downloaded");
-        }).
-        error(function(data, status, headers, config) {
-            alert("Image Download failed");
-        });
-    $rootScope.localImg  = localImg + '?decache=' + Math.random();
+  //   $http.get(localImg).
+  //       success(function(data, status, headers, config) {
+  //           alert("Image Downloaded");
+  //       }).
+  //       error(function(data, status, headers, config) {
+  //           alert("Image Download failed");
+  //       });
+  //   $rootScope.localImg  = localImg + '?decache=' + Math.random();
   });
 })
  

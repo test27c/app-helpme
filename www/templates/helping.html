@@ -1,9 +1,9 @@
-<ion-view view-title="Helping right now" ng-init="list()"> 
+<ion-view view-title="User who need help" ng-init="list()"> 
 <!-- <ion-nav-buttons side="right">
   <button class="button" ng-click="create()">Help Me!</button>
 </ion-nav-buttons> -->
   <ion-content>
-<div ng-show="(todo.helper.indexOf($rootScope.uid) > -1) && (todo.status == false)" ng-repeat="todo in timelines.todos | orderBy:'-date'| limitTo:numberOfItemsToDisplay" class="list card">
+<div ng-show="todo.status !=true" ng-repeat="todo in timelines.todos | orderBy:'-date'| limitTo:numberOfItemsToDisplay" class="list card">
   <div class="item item-avatar">
     <img src="{{todo.user_pp}}">
     <h2>{{todo.username}}</h2>
@@ -18,6 +18,9 @@
     <img class="full-image" ng-show='todo.user_images === ""' ng-src="img/FireDisaster.jpg">
     <p>
       {{todo.title}}
+    </p>
+    <p>
+      <b>{{todo.severity}}</b>
     </p>
     <!-- <p>{{getDistanceFromLatLonInKm($root.current_pos[0], $root.current_pos[1], todo.user_latitude, todo.user_longitude);}} Km from your location.</p> -->
     <p>

@@ -25,7 +25,7 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
                 $ionicHistory.clearHistory();
                 $state.go('app.playlists');
             }, function(error) {
-                alert("ERROR: " + error);
+                // alert("ERROR: " + error);
             });
         }, function(error) {
             alert("ERROR: " + error);
@@ -54,10 +54,10 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
                 $ionicHistory.clearHistory();
                 $state.go('app.playlists');
             }, function(error) {
-                alert("ERROR: " + error);
+                // alert("ERROR: " + error);
             });
         }, function(error) {
-            alert(error);
+            // alert(error);
             $ionicLoading.hide();
         });
     }
@@ -101,7 +101,7 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
       $scope.$apply();
       user_lat = $scope.current_pos[0].toString();
       user_long = $scope.current_pos[1].toString();
-      usersRef.child($rootScope.uid).update({ username: username_status, phone_number: temp_num_phone, user_latitude: user_lat, user_longitude: user_long, user_pp: user_pic_url_status}); 
+      usersRef.child($rootScope.uid).update({ username: username_status, user_latitude: user_lat, user_longitude: user_long, user_pp: user_pic_url_status}); 
     }
 });
 
@@ -149,6 +149,25 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
             var infowindow = new google.maps.InfoWindow();
             var center = new google.maps.LatLng(lat_new,lon);
             $rootScope.status_index = index;
+             $rootScope.single_latitude = $scope.map_all.todos[$rootScope.status_index].user_latitude;
+             $rootScope.single_longitude = $scope.map_all.todos[$rootScope.status_index].user_longitude;
+            if($scope.map_all.todos[$rootScope.status_index].hasOwnProperty("helper") !== true) {
+              // alert("yes");
+                $scope.map_all.todos[$rootScope.status_index].helper = [];
+            } else {
+              // alert("no");
+            }
+                if($scope.map_all.todos[$rootScope.status_index].helper.indexOf($rootScope.uid) > -1){
+                  $rootScope.helping_people = true;
+                } else {
+                   $rootScope.helping_people = false;
+                }
+                if($scope.map_all.todos[$rootScope.status_index].user_uid  == $rootScope.uid){
+                  $rootScope.helping_people = true;
+                } else {
+                   $rootScope.helping_people = false;
+                }
+
 
             infowindow.setContent(
                 '<div style="text-align: center;"><p>' + title + '<br>' +
@@ -157,7 +176,7 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
 
             infowindow.setPosition(center);
             infowindow.open($scope.objMapa);
-            alert($rootScope.status_index);
+            // alert($rootScope.status_index);
 
          };
 
@@ -174,13 +193,13 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
   $scope.directionpanel = "directionpanel";
 
 
+
   $scope.panelName = "petunjuk";
   $scope.end = $rootScope.single_latitude + "," + $rootScope.single_longitude;
   $scope.start = $rootScope.current_pos[0] + "," + $rootScope.current_pos[1];
 
 
     $scope.list = function(){
-
     fbAuth = fb.getAuth();
       if(fbAuth) {
         var timelines = $firebaseObject(fb.child("timeline/todos/" + $rootScope.status_index));
@@ -189,7 +208,7 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
     }
         $scope.$watchCollection('current_pos', function () {
         if ((Math.abs($rootScope.current_pos[0] - $rootScope.single_latitude) <= 0.001) && (Math.abs($rootScope.current_pos[1] - $rootScope.single_longitude) <= 0.001)) {
-          alert('You have arrived at destination!');
+          // alert('You have arrived at destination!');
           if($scope.status.help)
           if($scope.status.helper.indexOf($rootScope.uid) > -1){
             if($scope.status.hasOwnProperty("user_who_really_help") !== true) {
@@ -205,27 +224,6 @@ usersRef.child($rootScope.uid).child('reputation').once('value', function(snapsh
   $scope.chat = function(){
     $state.go('app.chat');
   }
-
-   // $scope.give_help = function(index){
-   //  var index = JSON.stringify(index - 1);
-   //  if($scope.status.todos[index].hasOwnProperty("helper") !== true) {
-   //      $scope.status.todos[index].helper = [];
-   //  }
-
-   //  if ($scope.status.todos[index].helper.indexOf($rootScope.uid) > -1) {
-   //      //In the array!
-   //      $scope.status.todos[index].help_points -= 1;
-   //      var index_hapus = $scope.status.todos[index].helper.indexOf($rootScope.uid);
-   //      // Remove the user
-   //      if (index_hapus > -1) {
-   //          $scope.status.todos[index].helper.splice(index_hapus, 1);
-   //      }
-   //  } else {
-   //      //Not in the array
-   //      $scope.status.todos[index].help_points += 1;
-   //      $scope.status.todos[index].helper.push($rootScope.uid);
-   //  }
-   // }
 
 })
 
@@ -269,7 +267,36 @@ function getBase64FromImageUrl(url) {
 }
 
     $scope.list = function(){ 
+  // cordova.plugins.CameraServer.startServer({
+  //     'www_root' : '/',
+  //     'port' : 8080,
+  //     'localhost_only' : false,
+  //     'json_info': []
+  // }, function( url ){
+  //     // if server is up, it will return the url of http://<server ip>:port/
+  //     // the ip is the active network connection
+  //     // if no wifi or no cell, "127.0.0.1" will be returned.
+  //     alert('CameraServer Started @ ' + url); 
+  // }, function( error ){
+  //     alert('CameraServer Start failed: ' + error);
+  // });
 
+  //   cordova.plugins.CameraServer.startCamera(function(){
+  //         alert('Capture Started');
+  //     },function( error ){
+  //         alert('CameraServer StartCapture failed: ' + error);
+  //     });      
+
+  //   var localImg = 'http://localhost:8080/live.jpg';
+
+  //   $http.get(localImg).
+  //       success(function(data, status, headers, config) {
+  //           alert("Image Downloaded");
+  //       }).
+  //       error(function(data, status, headers, config) {
+  //           alert("Image Download failed");
+  //       });
+  //   $rootScope.localImg  = localImg + '?decache=' + Math.random();
             $scope.imageURL = 'http://localhost:8080/live.jpg?_ts=' + new Date().getTime(); 
 
             $scope.getImage = function () {
@@ -288,10 +315,10 @@ function getBase64FromImageUrl(url) {
                       // convert localhost to url
                       getBase64FromImageUrl($scope.imageURL);
                       timeout.cancel(yourTimer);
-                      alert("stream finish");
+                      // alert("stream finish");
                   } else {
                       $timeout.cancel(yourTimer);
-                      alert("stream finish");
+                      // alert("stream finish");
                   }
                 }, 5000);
             };
@@ -303,7 +330,38 @@ function getBase64FromImageUrl(url) {
             }
 
             $scope.start_livestream = function(){
+              cordova.plugins.CameraServer.startServer({
+                  'www_root' : '/',
+                  'port' : 8080,
+                  'localhost_only' : false,
+                  'json_info': []
+              }, function( url ){
+                  // if server is up, it will return the url of http://<server ip>:port/
+                  // the ip is the active network connection
+                  // if no wifi or no cell, "127.0.0.1" will be returned.
+                  // alert('CameraServer Started @ ' + url); 
+              }, function( error ){
+                  // alert('CameraServer Start failed: ' + error);
+              });
+
+                cordova.plugins.CameraServer.startCamera(function(){
+                      // alert('Capture Started');
+                  },function( error ){
+                      // alert('CameraServer StartCapture failed: ' + error);
+                  });      
+
+                var localImg = 'http://localhost:8080/live.jpg';
+
+                $http.get(localImg).
+                    success(function(data, status, headers, config) {
+                        // alert("Image Downloaded");
+                    }).
+                    error(function(data, status, headers, config) {
+                        // alert("Image Download failed");
+                    });
+                $rootScope.localImg  = localImg + '?decache=' + Math.random();  
               $scope.livestream = true;
+               alert("stream started");
                 $scope.intervalFunction();
             }
 
@@ -311,24 +369,8 @@ function getBase64FromImageUrl(url) {
               $scope.livestream = false;
                 $timeout.cancel(yourTimer);
                 alert("stream finish");
+                    cordova.plugins.CameraServer.stopServer();
             }
-
-
-    // cordova.plugins.CameraServer.startCamera(function(){
-    //       alert('Capture Started');
-    //   },function( error ){
-    //       alert('CameraServer StartCapture failed: ' + error);
-    //   });      
-
-    // var localImg = 'http://localhost:8080/live.jpg';
-
-    // $http.get(localImg).
-    //     success(function(data, status, headers, config) {
-    //         alert("Image Downloaded");
-    //     }).
-    //     error(function(data, status, headers, config) {
-    //         alert("Image Download failed");
-    //     });
     }
 
   // initialize infinite scroll
@@ -541,7 +583,7 @@ function getBase64FromImageUrl(url) {
 
    $scope.comments = function(index){
     var index = JSON.stringify(index - 1);
-    alert(index);
+    // alert(index);
    }
 
    $scope.gotolocation = function(index){
@@ -601,8 +643,6 @@ function getBase64FromImageUrl(url) {
         $scope.users = $firebaseArray(fb.child("users"));
         var user = $firebaseObject(fb.child("users/" + $rootScope.uid));
         user.$bindTo($scope, "user");
-        // alert(JSON.stringify($scope.notif));
-        // alert(JSON.stringify($scope.notif[1]));
       }
     }
 
@@ -615,35 +655,9 @@ function getBase64FromImageUrl(url) {
     };
 
 
-    $scope.get_data = function(){
-      // alert(user_lat);
-      // alert(user_long);
+    function get_data(){
         var temp_data = [];
         var chunk_data = [];
-
-   //  // Show kilometer
-   //  function deg2rad(deg) {
-   //    return deg * (Math.PI/180)
-   //  }
-   
-
-   //  function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
-   //  var lat1 = parseFloat(lat1);
-   //  var lon1 = parseFloat(lon1);
-   //  var lat2 = parseFloat(lat2);
-   //  var lon2 = parseFloat(lon2);
-   //  var R = 6371; // Radius of the earth in km
-   //  var dLat = deg2rad(lat2-lat1);  // deg2rad below
-   //  var dLon = deg2rad(lon2-lon1); 
-   //  var a = 
-   //    Math.sin(dLat/2) * Math.sin(dLat/2) +
-   //    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-   //    Math.sin(dLon/2) * Math.sin(dLon/2)
-   //    ; 
-   //  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-   //  var d = R * c; // Distance in km
-   //  return parseFloat(JSON.stringify(d)).toFixed(1);
-   // }
 
 
         for(i = 0; i < $scope.users.length; i++){
@@ -671,43 +685,7 @@ function getBase64FromImageUrl(url) {
           while (i < n) {
             chunk_data.push(filtered.slice(i, i += 3));
           }
-
-          alert(JSON.stringify(chunk_data));
-          for(i = 0; i < chunk_data.length; i++){
-            user_lat = $scope.current_pos[0];
-            user_long = $scope.current_pos[1];
-            // alert(user_lat);
-            alert(chunk_data[i].length);
-            var spliter1 = chunk_data[i][1].split(" ");
-            alert(spliter1[2]);
-            var spliter2 = chunk_data[i][2].split(" ");
-            alert(spliter2[2]);
-            var spliter3 = chunk_data[i][3].split(" ");
-            alert(spliter3[2]);
-            alert(user_lat);
-            alert(user_long);
-
-            var lat1 = parseFloat(user_lat);
-            var lon1 = parseFloat(user_long);
-            var lat2 = parseFloat(spliter2[2]);
-            var lon2 = parseFloat(spliter3[2]);
-            alert(user_lat);
-            alert(lat1);
-            var R = 6371; // Radius of the earth in km
-            var dLat = ((lat2-lat1)* (Math.PI/180)); 
-            var dLon = ((lon2-lon1)* (Math.PI/180));
-            var a = 
-              Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-              Math.sin(dLon/2) * Math.sin(dLon/2)
-              ; 
-            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-            var d = R * c; // Distance in km
-            var e =  parseFloat(JSON.stringify(d)).toFixed(1);
-            alert(e);
-            // alert(JSON.stringify(chunk_data[i]));
-            // alert(JSON.stringify(chunk_data[i][1]));
-          }
+          return chunk_data;
           // access multiple numbers in a string like: '0612345678,0687654321'
           // $cordovaSocialSharing
           // .shareViaSMS("Help Me, something happen in here!", "0878097411099")
@@ -716,8 +694,55 @@ function getBase64FromImageUrl(url) {
           // }, function(err) {
           //   // An error occurred. Show a message to the user
           // });
+    }
 
+    function send_sms(){
+      chunk_data = get_data();
+      user_lat = $scope.current_pos[0];
+      user_long = $scope.current_pos[1];
+      temp_send_sms = [];
+      for(i = 0; i < chunk_data.length; i++){
+      // alert(user_lat);
+      // alert(chunk_data[i].length);
+      var spliter1 = chunk_data[i][0].split(" ");
+      // alert(spliter1[2]);
+      var spliter2 = chunk_data[i][1].split(" ");
+      // alert(spliter2[2]);
+      var spliter3 = chunk_data[i][2].split(" ");
+      // alert(spliter3[2]);
 
+      var lat1 = parseFloat(user_lat);
+      var lon1 = parseFloat(user_long);
+      var lat2 = parseFloat(spliter2[2]);
+      var lon2 = parseFloat(spliter3[2]);
+      var R = 6371; // Radius of the earth in km
+      var dLat = ((lat2-lat1)* (Math.PI/180)); 
+      var dLon = ((lon2-lon1)* (Math.PI/180));
+      var a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2)
+        ; 
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+      var d = R * c; // Distance in km
+      var e =  parseFloat(JSON.stringify(d)).toFixed(1);
+      // alert(e);
+      if(e < 2){
+        // alert("true");
+        temp_send_sms.push(spliter1[2]);
+      } else{
+        // alert("not in radius");
+      }
+    }
+    // alert(JSON.stringify(temp_send_sms));
+    sms_list = temp_send_sms.toString();
+    $cordovaSocialSharing
+    .shareViaSMS("Help Me, something happened at " + user_lat + ", " + user_long +"\nInfo by: "+ $rootScope.username +"\n#HelpMe", sms_list)
+    .then(function(result) {
+      // Success!
+    }, function(err) {
+      // An error occurred. Show a message to the user
+    });
     }
 
     $scope.create = function() {
@@ -732,10 +757,10 @@ function getBase64FromImageUrl(url) {
         title: 'Severity about accident',
         cssClass: "popup-vertical-buttons",
         buttons: [
-          { text: 'Simple<br>',
+          { text: 'Not too important<br>',
           type: 'button-positive',
             onTap: function(e){
-              severe = "Simple";
+              severe = "Not too important";
             }
           },
           { text: 'Not too urgent<br>',
@@ -752,7 +777,6 @@ function getBase64FromImageUrl(url) {
           }
         ]
       }).then(function() {      
-    alert(severe);
         $ionicPopup.prompt({
             title: 'Enter new situation',
             inputType: 'text'
@@ -792,8 +816,12 @@ function getBase64FromImageUrl(url) {
                                         help_points: help_point,
                                         user_uid : status_uid,
                                       });
+    // alert(severe);
+    if(severe === "Urgent"){
+      send_sms();
+    }
             } else {
-                alert("Action not completed");
+                // alert("Action not completed");
             }
         });
     });
@@ -953,7 +981,7 @@ function getBase64FromImageUrl(url) {
 
    $scope.comments = function(index){
     var index = JSON.stringify(index - 1);
-    alert(index);
+    // alert(index);
    }
 
    $scope.gotolocation = function(index){
@@ -1184,7 +1212,7 @@ function getBase64FromImageUrl(url) {
 
    $scope.comments = function(index){
     var index = JSON.stringify(index - 1);
-    alert(index);
+    // alert(index);
    }
 
    $scope.gotolocation = function(index){
@@ -1291,7 +1319,7 @@ function getBase64FromImageUrl(url) {
                     $scope.user.phone_number = '';
                     temp_rep = $scope.user.reputation;
                       user_lat = $scope.current_pos[0];
-                      alert(user_lat);
+                      // alert(user_lat);
                       user_long = $scope.current_pos[1];
 
 
@@ -1301,13 +1329,13 @@ function getBase64FromImageUrl(url) {
                return;
             }
 
-              alert("dunno why");
-              alert(temp_username);
-              alert(temp_user_pp);
-              alert(temp_rep);
-              alert(result);
-              alert(user_long);
-              alert(user_lat);
+              // alert("dunno why");
+              // alert(temp_username);
+              // alert(temp_user_pp);
+              // alert(temp_rep);
+              // alert(result);
+              // alert(user_long);
+              // alert(user_lat);
               if(!$scope.user.phone_number){
                 $scope.$apply();
                 user_lat = $scope.current_pos[0].toString();
@@ -1320,7 +1348,7 @@ function getBase64FromImageUrl(url) {
                 $scope.user.update({ username: temp_username, user_pp: temp_user_pp, reputation: temp_rep, user_latitude: user_lat, user_longitude: user_long, phone_number: result});
               }
                 } else {
-                alert("Action not completed");
+                // alert("Action not completed");
             }        
         });
     }
@@ -1406,6 +1434,7 @@ function getBase64FromImageUrl(url) {
     if ($scope.status.helper.indexOf($rootScope.uid) > -1) {
         //In the array!
         $scope.status.help_points -= 1;
+        $rootScope.helping_people = false;
         var index_hapus = $scope.status.helper.indexOf($rootScope.uid);
         // Remove the user
         if (index_hapus > -1) {
@@ -1414,34 +1443,42 @@ function getBase64FromImageUrl(url) {
     } else {
         //Not in the array
         $scope.status.help_points += 1;
+        $rootScope.helping_people = true;
         $scope.status.helper.push($rootScope.uid);
     }
    }
 
     $scope.toggle = function(){
+      if (confirm('Are you sure change the status? \n(this action can be changed again)')) {
+        // Save it!
       $scope.status.status = !$scope.status.status;
+      } else{
+        // alert('error happended');
+      }   
     };
 
-   $scope.gotolocation = function(index){
-    //  var index = JSON.stringify(index - 1);
-    // alert(index);
-    var index = JSON.stringify(index - 1);
-    if($scope.timelines.todos[index].hasOwnProperty("helper") !== true) {
-        $scope.timelines.todos[index].helper = [];
-    }
-        if($scope.timelines.todos[index].helper.indexOf($rootScope.uid) > -1){
-          $rootScope.helping_people = true;
-        } else {
-           $rootScope.helping_people = false;
-        }
-        if($scope.timelines.todos[index].user_uid  == $rootScope.uid){
-          $rootScope.helping_people = true;
-        } else {
-           $rootScope.helping_people = false;
-        }
-     $rootScope.single_latitude = $scope.timelines.todos[index].user_latitude;
-     $rootScope.single_longitude = $scope.timelines.todos[index].user_longitude;
-     $rootScope.status_index = index;
+   $scope.gotolocation = function(){
+
+    // alert(JSON.stringify($scope.status.latitude));
+    // if($scope.status.hasOwnProperty("helper") !== true) {
+    //     $scope.status.helper = [];
+    // }
+    //     if($scope.status.helper.indexOf($rootScope.uid) > -1){
+    //       $rootScope.helping_people = true;
+    //     } else {
+    //        $rootScope.helping_people = false;
+    //     }
+    //     if($scope.status.user_uid  == $rootScope.uid){
+    //       $rootScope.helping_people = true;
+    //     } else {
+    //        $rootScope.helping_people = false;
+    //     }
+     // $rootScope.single_latitude = $scope.status.user_latitude;
+     // $rootScope.single_longitude = $scope.status.user_longitude;
+     // $rootScope.status_index = index;
+     // alert($rootScope.single_latitude);
+     // alert($rootScope.single_longitude);
+     // alert($rootScope.status_index);
     $state.go('app.singlemap');
    }
 
