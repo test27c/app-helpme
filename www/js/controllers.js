@@ -1,7 +1,7 @@
 angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.services'])
 
 
-.controller("SignUpCtrl", function(Auth, $scope, $firebaseAuth, $cordovaOauth, $ionicLoading,$ionicHistory, $state, $rootScope) {
+.controller("SignUpCtrl", function(Auth, $scope, $firebaseAuth,$firebaseObject, $cordovaOauth, $ionicLoading,$ionicHistory, $state, $rootScope) {
  
     $scope.fbLogin = function() {
       $ionicLoading.show({template: 'Please Wait...'}); 
@@ -14,16 +14,21 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
                 $rootScope.last_name = authData.facebook.cachedUserProfile.last_name;
                 $rootScope.pic_url = authData.facebook.cachedUserProfile.picture.data.url;
                 $rootScope.uid = authData.uid;
-                // alert(username);
-                $ionicLoading.hide();
-                $ionicHistory.nextViewOptions({
-                    disableBack: true,
-                    disableAnimate: true,
-                    historyRoot: true
-                });
-                $ionicHistory.clearCache();
-                $ionicHistory.clearHistory();
-                $state.go('app.playlists');
+                var banned = check_if_banned($rootScope.uid);
+                if(banned){
+                  alert("your account was banned");
+                  ionic.Platform.exitApp();
+                } else {
+                  $ionicLoading.hide();
+                  $ionicHistory.nextViewOptions({
+                      disableBack: true,
+                      disableAnimate: true,
+                      historyRoot: true
+                  });
+                  $ionicHistory.clearCache();
+                  $ionicHistory.clearHistory();
+                  $state.go('app.playlists');
+                }
             }, function(error) {
                 // alert("ERROR: " + error);
             });
@@ -43,16 +48,21 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
                 $rootScope.last_name = authData.google.cachedUserProfile.family_name;
                 $rootScope.pic_url = authData.google.cachedUserProfile.picture;
                 $rootScope.uid = authData.uid;
-
-                $ionicLoading.hide();
-                $ionicHistory.nextViewOptions({
-                    disableBack: true,
-                    disableAnimate: true,
-                    historyRoot: true
-                });
-                $ionicHistory.clearCache();
-                $ionicHistory.clearHistory();
-                $state.go('app.playlists');
+                var banned = check_if_banned($rootScope.uid);
+                if(banned){
+                  alert("your account was banned");
+                  ionic.Platform.exitApp();
+                } else {
+                  $ionicLoading.hide();
+                  $ionicHistory.nextViewOptions({
+                      disableBack: true,
+                      disableAnimate: true,
+                      historyRoot: true
+                  });
+                  $ionicHistory.clearCache();
+                  $ionicHistory.clearHistory();
+                  $state.go('app.playlists');
+                }
             }, function(error) {
                 // alert("ERROR: " + error);
             });
@@ -60,6 +70,20 @@ angular.module('helpMe.controllers', ['angularMoment','ngCordova', 'helpMe.servi
             // alert(error);
             $ionicLoading.hide();
         });
+    }
+
+    $scope.list = function(){
+        bloked = new Firebase("https://fbchat27c.firebaseio.com/blocked-users");
+        bus = $firebaseObject(bloked);
+        bus.$bindTo($scope, "blockedusers");    
+    }
+    function check_if_banned(param){
+      // alert(JSON.stringify($scope.blockedusers.user));
+        if ($scope.blockedusers.user.indexOf(param) > -1) {
+            return true;
+        } else {
+            return false;
+        }
     }
  
 })
@@ -239,12 +263,6 @@ $scope.$on('$destroy', function(){
     $timeout.cancel(yourTimer);
 });
 
-    fbAuth = fb.getAuth();
-      if(fbAuth) {
-        var timelines = $firebaseObject(fb.child("timeline/todos/" + $rootScope.status_index));
-        timelines.$bindTo($scope, "status");
-      }
-
 function getBase64FromImageUrl(url) {
     var img = new Image();
 
@@ -259,44 +277,23 @@ function getBase64FromImageUrl(url) {
         ctx.drawImage(this, 0, 0);
 
         var dataURL = canvas.toDataURL("image/png");
-
+        if($scope.status.hasOwnProperty("streamrecord") !== true) {
+            $scope.status.streamrecord = [];
+        }
+        image_data = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
         $scope.status.liveimage = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+        $scope.status.streamrecord.push(image_data);
     };
 
     img.src = url;
 }
 
     $scope.list = function(){ 
-  // cordova.plugins.CameraServer.startServer({
-  //     'www_root' : '/',
-  //     'port' : 8080,
-  //     'localhost_only' : false,
-  //     'json_info': []
-  // }, function( url ){
-  //     // if server is up, it will return the url of http://<server ip>:port/
-  //     // the ip is the active network connection
-  //     // if no wifi or no cell, "127.0.0.1" will be returned.
-  //     alert('CameraServer Started @ ' + url); 
-  // }, function( error ){
-  //     alert('CameraServer Start failed: ' + error);
-  // });
-
-  //   cordova.plugins.CameraServer.startCamera(function(){
-  //         alert('Capture Started');
-  //     },function( error ){
-  //         alert('CameraServer StartCapture failed: ' + error);
-  //     });      
-
-  //   var localImg = 'http://localhost:8080/live.jpg';
-
-  //   $http.get(localImg).
-  //       success(function(data, status, headers, config) {
-  //           alert("Image Downloaded");
-  //       }).
-  //       error(function(data, status, headers, config) {
-  //           alert("Image Download failed");
-  //       });
-  //   $rootScope.localImg  = localImg + '?decache=' + Math.random();
+      fbAuth = fb.getAuth();
+      if(fbAuth) {
+        var timelines = $firebaseObject(fb.child("timeline/todos/" + $rootScope.status_index));
+        timelines.$bindTo($scope, "status");
+      }
             $scope.imageURL = 'http://localhost:8080/live.jpg?_ts=' + new Date().getTime(); 
 
             $scope.getImage = function () {
